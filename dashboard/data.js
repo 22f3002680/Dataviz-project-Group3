@@ -335,6 +335,21 @@ window.DVD_DASHBOARD_DATA = {
       "seller_state": "SP"
     }
   ],
+  "metadata": {
+    "pipelineVersion": 1,
+    "rowCounts": {
+      "closed": 842,
+      "customers": 99441,
+      "items": 112650,
+      "mql": 8000,
+      "orders": 99441,
+      "products": 32951,
+      "reviews": 99224,
+      "sellers": 3095,
+      "translation": 71
+    },
+    "source": "workbook:Dataviz_proj_all_datasets.xlsx"
+  },
   "monthlyOrders": [
     {
       "month": "2016-09",
