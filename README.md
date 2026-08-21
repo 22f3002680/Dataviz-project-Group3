@@ -22,3 +22,4 @@ python3 scripts/build_dashboard_data.py --source-dir /path/to/raw_csvs
 ```
 
 See `docs/data_pipeline.md` for the cleaning, joins, and derived field definitions.
+See `docs/metric_dictionary.md` for metric definitions and validation rules.
