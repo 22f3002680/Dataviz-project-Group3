@@ -1,5 +1,10 @@
 # Dataviz-project-Group3
 
+## Project Scope
+
+See `docs/project_scope.md` for the business goal, final analysis questions,
+core metrics, planned visuals, and dashboard/report mapping.
+
 ## Dashboard
 
 Live dashboard: https://22f3002680.github.io/Dataviz-project-Group3/
