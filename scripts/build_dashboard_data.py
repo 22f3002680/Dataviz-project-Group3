@@ -483,6 +483,53 @@ def build_delivery_bins(order_base: pd.DataFrame) -> pd.DataFrame:
     return round_columns(delivery_bins, ["avg_review", "low_review_rate"])
 
 
+def build_delay_impact_summary(order_base: pd.DataFrame) -> pd.DataFrame:
+    delivered = order_base[order_base["is_delivered"]].copy()
+    delivered["segment"] = delivered["is_late"].map(
+        {True: "Late", False: "On-time or early"}
+    )
+    summary = (
+        delivered.groupby("segment", dropna=False)
+        .agg(
+            orders=("order_id", "count"),
+            avg_review=("review_score", "mean"),
+            low_review_rate=("low_review", lambda s: s.mean() * 100),
+            avg_delay_days=("delay_days", "mean"),
+        )
+        .reset_index()
+    )
+    return round_columns(summary, ["avg_review", "low_review_rate", "avg_delay_days"])
+
+
+def build_delay_bins(order_base: pd.DataFrame) -> pd.DataFrame:
+    delivered = order_base[order_base["is_delivered"] & order_base["delay_days"].notna()].copy()
+    delivered["delay_bin"] = pd.cut(
+        delivered["delay_days"],
+        bins=[-np.inf, 0, 3, 7, 14, 21, np.inf],
+        labels=[
+            "Early / on-time",
+            "1-3 days late",
+            "4-7 days late",
+            "8-14 days late",
+            "15-21 days late",
+            "22+ days late",
+        ],
+        include_lowest=True,
+    )
+    bins = (
+        delivered.groupby("delay_bin", observed=True)
+        .agg(
+            orders=("order_id", "count"),
+            avg_review=("review_score", "mean"),
+            low_review_rate=("low_review", lambda s: s.mean() * 100),
+        )
+        .reset_index()
+        .rename(columns={"delay_bin": "range"})
+    )
+    bins["range"] = bins["range"].astype(str)
+    return round_columns(bins, ["avg_review", "low_review_rate"])
+
+
 def build_time_summaries(order_base: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     monthly = (
         order_base.groupby("month", dropna=False)
@@ -599,6 +646,8 @@ def build_dashboard_data(
     delivery_bins = build_delivery_bins(order_base)
     monthly, weekdays = build_time_summaries(order_base)
     same_state = build_same_state_summary(item_base)
+    delay_impact = build_delay_impact_summary(order_base)
+    delay_bins = build_delay_bins(order_base)
     healthy_growth = build_growth_summary(item_base)
 
     row_counts = {name: int(len(frame)) for name, frame in sorted(tables.items())}
@@ -608,7 +657,7 @@ def build_dashboard_data(
         "metadata": {
             "source": source_label,
             "rowCounts": row_counts,
-            "pipelineVersion": 1,
+            "pipelineVersion": 2,
         },
         "summary": summary,
         "statusCounts": records(
@@ -633,6 +682,8 @@ def build_dashboard_data(
         "monthlyOrders": records(monthly),
         "weekdayOrders": records(weekdays),
         "deliveryBins": records(delivery_bins),
+        "delayImpactSummary": records(delay_impact),
+        "delayBins": records(delay_bins),
         "sameState": records(
             same_state[
                 [

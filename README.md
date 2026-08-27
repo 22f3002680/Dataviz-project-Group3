@@ -32,3 +32,5 @@ See `docs/data_quality_audit.md` for schema joins, quality findings, and
 cleaning decisions.
 See `docs/eda/order_journey_eda.md` for the baseline order-journey EDA and
 reusable visuals.
+See `docs/eda/delivery_delay_impact.md` for the delivery delay and review
+impact analysis.
