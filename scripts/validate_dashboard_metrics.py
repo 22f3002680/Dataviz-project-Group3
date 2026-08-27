@@ -568,7 +568,9 @@ def main() -> None:
         "regionalRisk",
         records(
             sort_rows(
-                states[states["items"] >= 500],
+                state_summary(item_base[item_base["is_delivered"]]).loc[
+                    lambda frame: frame["items"] >= 500
+                ],
                 ["late_rate", "avg_delivery", "customer_state"],
                 [False, False, True],
             )

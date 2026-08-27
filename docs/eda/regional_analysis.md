@@ -8,7 +8,7 @@ project metric dictionary.
 ## Method and guardrails
 
 - Demand is measured by item rows and item-price revenue by customer state.
-- Delivery and satisfaction metrics use the pipeline's delivered-item rules.
+- Delivery and satisfaction metrics in the risk view use delivered item rows; demand volume and revenue use all item rows.
 - States with fewer than **500 item rows** are excluded from the risk ranking to reduce small-sample volatility.
 - The risk chart shows all states, but its highlighted risk table uses the minimum-volume rule.
 - State comparisons are descriptive and do not prove that geography alone causes delay or low reviews.
@@ -63,16 +63,16 @@ standalone priorities.
 
 | State | Item rows | Revenue | Average delivery days | Late rate | Low-review rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| MA | 824 | 119,648.22 | 21.65 | 19.8% | 23.3% |
-| PI | 542 | 86,914.08 | 19.38 | 14.9% | 18.4% |
-| CE | 1,478 | 227,254.71 | 20.99 | 14.8% | 21.0% |
-| BA | 3,799 | 511,349.99 | 19.25 | 13.3% | 19.9% |
-| RJ | 14,579 | 1,824,092.67 | 15.15 | 12.6% | 22.2% |
-| PA | 1,080 | 178,947.81 | 23.75 | 12.1% | 20.6% |
-| ES | 2,256 | 275,037.31 | 15.65 | 12.1% | 15.9% |
-| PB | 602 | 115,268.08 | 20.59 | 11.0% | 17.1% |
-| MS | 819 | 116,812.64 | 15.53 | 10.7% | 16.5% |
-| RN | 529 | 83,034.98 | 19.33 | 10.2% | 15.1% |
+| MA | 800 | 117,009.38 | 21.65 | 20.4% | 21.8% |
+| PI | 523 | 84,721.00 | 19.38 | 15.5% | 16.6% |
+| CE | 1,426 | 219,757.38 | 20.99 | 15.3% | 19.2% |
+| BA | 3,683 | 493,584.14 | 19.25 | 13.7% | 18.6% |
+| RJ | 14,143 | 1,759,651.13 | 15.15 | 13.0% | 20.6% |
+| PA | 1,054 | 174,470.59 | 23.75 | 12.4% | 19.3% |
+| ES | 2,225 | 268,643.45 | 15.65 | 12.2% | 15.2% |
+| PB | 586 | 112,586.82 | 20.59 | 11.3% | 15.9% |
+| MS | 811 | 115,429.97 | 15.53 | 10.8% | 16.0% |
+| RN | 521 | 82,105.66 | 19.33 | 10.4% | 14.2% |
 
 ## Priority regions
 
@@ -82,8 +82,8 @@ screen, not a causal model.
 
 | State | Item rows | Revenue | Late rate | Average review |
 | --- | ---: | ---: | ---: | ---: |
-| RJ | 14,579 | 1,824,092.67 | 12.6% | 3.81 |
-| BA | 3,799 | 511,349.99 | 13.3% | 3.81 |
+| RJ | 14,579 | 1,824,092.67 | 13.0% | 3.87 |
+| BA | 3,799 | 511,349.99 | 13.7% | 3.86 |
 
 ## Seller-state and customer-state context
 
