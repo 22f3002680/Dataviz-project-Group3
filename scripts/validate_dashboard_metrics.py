@@ -224,6 +224,53 @@ def expected_delivery_bins(order_base: pd.DataFrame) -> list[dict[str, Any]]:
     return records(round_columns(delivery_bins, ["avg_review", "low_review_rate"]))
 
 
+def expected_delay_impact_summary(order_base: pd.DataFrame) -> list[dict[str, Any]]:
+    delivered = order_base[order_base["is_delivered"]].copy()
+    delivered["segment"] = delivered["is_late"].map(
+        {True: "Late", False: "On-time or early"}
+    )
+    summary = (
+        delivered.groupby("segment", dropna=False)
+        .agg(
+            orders=("order_id", "count"),
+            avg_review=("review_score", "mean"),
+            low_review_rate=("low_review", lambda s: s.mean() * 100),
+            avg_delay_days=("delay_days", "mean"),
+        )
+        .reset_index()
+    )
+    return records(round_columns(summary, ["avg_review", "low_review_rate", "avg_delay_days"]))
+
+
+def expected_delay_bins(order_base: pd.DataFrame) -> list[dict[str, Any]]:
+    delivered = order_base[order_base["is_delivered"] & order_base["delay_days"].notna()].copy()
+    delivered["delay_bin"] = pd.cut(
+        delivered["delay_days"],
+        bins=[-np.inf, 0, 3, 7, 14, 21, np.inf],
+        labels=[
+            "Early / on-time",
+            "1-3 days late",
+            "4-7 days late",
+            "8-14 days late",
+            "15-21 days late",
+            "22+ days late",
+        ],
+        include_lowest=True,
+    )
+    delay_bins = (
+        delivered.groupby("delay_bin", observed=True)
+        .agg(
+            orders=("order_id", "count"),
+            avg_review=("review_score", "mean"),
+            low_review_rate=("low_review", lambda s: s.mean() * 100),
+        )
+        .reset_index()
+        .rename(columns={"delay_bin": "range"})
+    )
+    delay_bins["range"] = delay_bins["range"].astype(str)
+    return records(round_columns(delay_bins, ["avg_review", "low_review_rate"]))
+
+
 def category_summary(item_base: pd.DataFrame) -> pd.DataFrame:
     category = (
         item_base.groupby("category", dropna=False)
@@ -498,6 +545,15 @@ def main() -> None:
     checks += 1
     compare("deliveryBins", expected_delivery_bins(order_base), dashboard["deliveryBins"], failures)
     checks += 1
+    compare(
+        "delayImpactSummary",
+        expected_delay_impact_summary(order_base),
+        dashboard["delayImpactSummary"],
+        failures,
+    )
+    checks += 1
+    compare("delayBins", expected_delay_bins(order_base), dashboard["delayBins"], failures)
+    checks += 1
     compare("sameState", same_state_summary(item_base), dashboard["sameState"], failures)
     checks += 1
     compare(
@@ -520,7 +576,7 @@ def main() -> None:
 
     print(f"Metric validation passed: {checks} checks")
     print(
-        "Validated summary KPIs, row counts, review distribution, delivery bins, "
+        "Validated summary KPIs, row counts, review distribution, delivery bins, delay impact, "
         "same-state delivery, category rankings, state rankings, seller lists, "
         "and growth categories."
     )
