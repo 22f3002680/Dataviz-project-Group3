@@ -75,6 +75,22 @@ button {
   gap: 8px;
 }
 
+.reports-link {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  color: #dbeafe;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.reports-link:hover,
+.reports-link:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
 .tab {
   width: 100%;
   padding: 10px 12px;
