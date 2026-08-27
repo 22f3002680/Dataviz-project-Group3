@@ -81,6 +81,8 @@ original category and then to `unknown`.
 - `monthlyOrders`
 - `weekdayOrders`
 - `deliveryBins`
+- `delayImpactSummary`
+- `delayBins`
 - `sameState`
 - `topCategoriesByItems`
 - `topCategoriesByRevenue`
