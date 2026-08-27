@@ -37,10 +37,16 @@ def build_report(data: dict) -> str:
     top_revenue = states.head(10)
     top_three_revenue = states.head(3)["revenue"].sum() / states["revenue"].sum() * 100
     risk_cutoff = 500
-    priority = states[
-        (states["items"] >= states["items"].quantile(0.75))
-        & (states["late_rate"] >= states["late_rate"].median())
-    ].sort_values(["revenue", "late_rate"], ascending=[False, False])
+    priority = states.merge(
+        risk_states[["customer_state", "late_rate", "avg_review"]],
+        on="customer_state",
+        how="inner",
+        suffixes=("_demand", "_risk"),
+    )
+    priority = priority[
+        (priority["items"] >= states["items"].quantile(0.75))
+        & (priority["late_rate_risk"] >= risk_states["late_rate"].median())
+    ].sort_values(["revenue", "late_rate_risk"], ascending=[False, False])
     risk_display = risk_states.head(10)
 
     plt.figure(figsize=(9, 5.2))
@@ -101,7 +107,7 @@ def build_report(data: dict) -> str:
         for _, row in risk_display.iterrows()
     )
     priority_rows = "\n".join(
-        f"| {row['customer_state']} | {int(row['items']):,} | {row['revenue']:,.2f} | {row['late_rate']:.1f}% | {row['avg_review']:.2f} |"
+        f"| {row['customer_state']} | {int(row['items']):,} | {row['revenue']:,.2f} | {row['late_rate_risk']:.1f}% | {row['avg_review_risk']:.2f} |"
         for _, row in priority.head(8).iterrows()
     )
 
@@ -115,7 +121,7 @@ project metric dictionary.
 ## Method and guardrails
 
 - Demand is measured by item rows and item-price revenue by customer state.
-- Delivery and satisfaction metrics use the pipeline's delivered-item rules.
+- Delivery and satisfaction metrics in the risk view use delivered item rows; demand volume and revenue use all item rows.
 - States with fewer than **{risk_cutoff} item rows** are excluded from the risk ranking to reduce small-sample volatility.
 - The risk chart shows all states, but its highlighted risk table uses the minimum-volume rule.
 - State comparisons are descriptive and do not prove that geography alone causes delay or low reviews.
