@@ -657,7 +657,7 @@ def build_dashboard_data(
         "metadata": {
             "source": source_label,
             "rowCounts": row_counts,
-            "pipelineVersion": 1,
+            "pipelineVersion": 2,
         },
         "summary": summary,
         "statusCounts": records(

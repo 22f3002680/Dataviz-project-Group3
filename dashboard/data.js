@@ -390,7 +390,7 @@ window.DVD_DASHBOARD_DATA = {
     }
   ],
   "metadata": {
-    "pipelineVersion": 1,
+    "pipelineVersion": 2,
     "rowCounts": {
       "closed": 842,
       "customers": 99441,
