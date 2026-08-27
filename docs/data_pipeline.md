@@ -84,6 +84,8 @@ original category and then to `unknown`.
 - `delayImpactSummary`
 - `delayBins`
 - `sameState`
+- `regionalDemand`
+- `regionalRisk`
 - `topCategoriesByItems`
 - `topCategoriesByRevenue`
 - `riskCategories`

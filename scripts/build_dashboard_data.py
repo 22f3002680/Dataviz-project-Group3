@@ -696,6 +696,16 @@ def build_dashboard_data(
                 ]
             ]
         ),
+        "regionalDemand": records(
+            sort_rows(customer_states, ["revenue", "customer_state"], [False, True])
+        ),
+        "regionalRisk": records(
+            sort_rows(
+                customer_states[customer_states["items"] >= 500],
+                ["late_rate", "avg_delivery", "customer_state"],
+                [False, False, True],
+            )
+        ),
         "topCategoriesByItems": records(
             sort_rows(category, ["items", "category"], [False, True]).head(10)
         ),

@@ -506,6 +506,424 @@ window.DVD_DASHBOARD_DATA = {
       "orders": 4
     }
   ],
+  "regionalDemand": [
+    {
+      "avg_delivery": 8.72,
+      "avg_review": 4.13,
+      "customer_state": "SP",
+      "items": 47449,
+      "late_rate": 5.65,
+      "low_review_rate": 13.67,
+      "revenue": 5202955.05
+    },
+    {
+      "avg_delivery": 15.15,
+      "avg_review": 3.81,
+      "customer_state": "RJ",
+      "items": 14579,
+      "late_rate": 12.59,
+      "low_review_rate": 22.2,
+      "revenue": 1824092.67
+    },
+    {
+      "avg_delivery": 11.98,
+      "avg_review": 4.09,
+      "customer_state": "MG",
+      "items": 13129,
+      "late_rate": 5.35,
+      "low_review_rate": 14.43,
+      "revenue": 1585308.03
+    },
+    {
+      "avg_delivery": 15.19,
+      "avg_review": 4.05,
+      "customer_state": "RS",
+      "items": 6235,
+      "late_rate": 6.77,
+      "low_review_rate": 15.3,
+      "revenue": 750304.02
+    },
+    {
+      "avg_delivery": 11.95,
+      "avg_review": 4.11,
+      "customer_state": "PR",
+      "items": 5740,
+      "late_rate": 4.7,
+      "low_review_rate": 14.41,
+      "revenue": 683083.76
+    },
+    {
+      "avg_delivery": 15.0,
+      "avg_review": 4.0,
+      "customer_state": "SC",
+      "items": 4176,
+      "late_rate": 9.43,
+      "low_review_rate": 16.33,
+      "revenue": 520553.34
+    },
+    {
+      "avg_delivery": 19.25,
+      "avg_review": 3.81,
+      "customer_state": "BA",
+      "items": 3799,
+      "late_rate": 13.27,
+      "low_review_rate": 19.85,
+      "revenue": 511349.99
+    },
+    {
+      "avg_delivery": 12.96,
+      "avg_review": 4.01,
+      "customer_state": "DF",
+      "items": 2406,
+      "late_rate": 7.27,
+      "low_review_rate": 16.29,
+      "revenue": 302603.94
+    },
+    {
+      "avg_delivery": 15.4,
+      "avg_review": 3.99,
+      "customer_state": "GO",
+      "items": 2333,
+      "late_rate": 7.67,
+      "low_review_rate": 15.65,
+      "revenue": 294591.95
+    },
+    {
+      "avg_delivery": 15.65,
+      "avg_review": 3.99,
+      "customer_state": "ES",
+      "items": 2256,
+      "late_rate": 12.06,
+      "low_review_rate": 15.91,
+      "revenue": 275037.31
+    },
+    {
+      "avg_delivery": 18.28,
+      "avg_review": 3.95,
+      "customer_state": "PE",
+      "items": 1806,
+      "late_rate": 9.86,
+      "low_review_rate": 17.94,
+      "revenue": 262788.03
+    },
+    {
+      "avg_delivery": 20.99,
+      "avg_review": 3.81,
+      "customer_state": "CE",
+      "items": 1478,
+      "late_rate": 14.75,
+      "low_review_rate": 20.97,
+      "revenue": 227254.71
+    },
+    {
+      "avg_delivery": 23.75,
+      "avg_review": 3.79,
+      "customer_state": "PA",
+      "items": 1080,
+      "late_rate": 12.13,
+      "low_review_rate": 20.56,
+      "revenue": 178947.81
+    },
+    {
+      "avg_delivery": 17.96,
+      "avg_review": 3.98,
+      "customer_state": "MT",
+      "items": 1055,
+      "late_rate": 6.64,
+      "low_review_rate": 16.49,
+      "revenue": 156453.53
+    },
+    {
+      "avg_delivery": 21.65,
+      "avg_review": 3.7,
+      "customer_state": "MA",
+      "items": 824,
+      "late_rate": 19.78,
+      "low_review_rate": 23.3,
+      "revenue": 119648.22
+    },
+    {
+      "avg_delivery": 15.53,
+      "avg_review": 4.04,
+      "customer_state": "MS",
+      "items": 819,
+      "late_rate": 10.74,
+      "low_review_rate": 16.48,
+      "revenue": 116812.64
+    },
+    {
+      "avg_delivery": 20.59,
+      "avg_review": 4.0,
+      "customer_state": "PB",
+      "items": 602,
+      "late_rate": 10.96,
+      "low_review_rate": 17.11,
+      "revenue": 115268.08
+    },
+    {
+      "avg_delivery": 19.38,
+      "avg_review": 3.9,
+      "customer_state": "PI",
+      "items": 542,
+      "late_rate": 14.94,
+      "low_review_rate": 18.45,
+      "revenue": 86914.08
+    },
+    {
+      "avg_delivery": 19.33,
+      "avg_review": 4.08,
+      "customer_state": "RN",
+      "items": 529,
+      "late_rate": 10.21,
+      "low_review_rate": 15.12,
+      "revenue": 83034.98
+    },
+    {
+      "avg_delivery": 24.49,
+      "avg_review": 3.73,
+      "customer_state": "AL",
+      "items": 444,
+      "late_rate": 23.2,
+      "low_review_rate": 24.32,
+      "revenue": 80314.81
+    },
+    {
+      "avg_delivery": 21.47,
+      "avg_review": 3.84,
+      "customer_state": "SE",
+      "items": 385,
+      "late_rate": 15.84,
+      "low_review_rate": 21.3,
+      "revenue": 58920.85
+    },
+    {
+      "avg_delivery": 17.45,
+      "avg_review": 4.11,
+      "customer_state": "TO",
+      "items": 315,
+      "late_rate": 12.06,
+      "low_review_rate": 13.33,
+      "revenue": 49621.74
+    },
+    {
+      "avg_delivery": 19.74,
+      "avg_review": 4.02,
+      "customer_state": "RO",
+      "items": 278,
+      "late_rate": 3.96,
+      "low_review_rate": 16.55,
+      "revenue": 46140.64
+    },
+    {
+      "avg_delivery": 26.39,
+      "avg_review": 4.09,
+      "customer_state": "AM",
+      "items": 165,
+      "late_rate": 4.24,
+      "low_review_rate": 17.58,
+      "revenue": 22356.84
+    },
+    {
+      "avg_delivery": 20.72,
+      "avg_review": 4.1,
+      "customer_state": "AC",
+      "items": 92,
+      "late_rate": 3.26,
+      "low_review_rate": 16.3,
+      "revenue": 15982.95
+    },
+    {
+      "avg_delivery": 28.21,
+      "avg_review": 4.22,
+      "customer_state": "AP",
+      "items": 82,
+      "late_rate": 4.88,
+      "low_review_rate": 7.32,
+      "revenue": 13474.3
+    },
+    {
+      "avg_delivery": 28.23,
+      "avg_review": 3.58,
+      "customer_state": "RR",
+      "items": 52,
+      "late_rate": 9.62,
+      "low_review_rate": 25.0,
+      "revenue": 7829.43
+    }
+  ],
+  "regionalRisk": [
+    {
+      "avg_delivery": 21.65,
+      "avg_review": 3.7,
+      "customer_state": "MA",
+      "items": 824,
+      "late_rate": 19.78,
+      "low_review_rate": 23.3,
+      "revenue": 119648.22
+    },
+    {
+      "avg_delivery": 19.38,
+      "avg_review": 3.9,
+      "customer_state": "PI",
+      "items": 542,
+      "late_rate": 14.94,
+      "low_review_rate": 18.45,
+      "revenue": 86914.08
+    },
+    {
+      "avg_delivery": 20.99,
+      "avg_review": 3.81,
+      "customer_state": "CE",
+      "items": 1478,
+      "late_rate": 14.75,
+      "low_review_rate": 20.97,
+      "revenue": 227254.71
+    },
+    {
+      "avg_delivery": 19.25,
+      "avg_review": 3.81,
+      "customer_state": "BA",
+      "items": 3799,
+      "late_rate": 13.27,
+      "low_review_rate": 19.85,
+      "revenue": 511349.99
+    },
+    {
+      "avg_delivery": 15.15,
+      "avg_review": 3.81,
+      "customer_state": "RJ",
+      "items": 14579,
+      "late_rate": 12.59,
+      "low_review_rate": 22.2,
+      "revenue": 1824092.67
+    },
+    {
+      "avg_delivery": 23.75,
+      "avg_review": 3.79,
+      "customer_state": "PA",
+      "items": 1080,
+      "late_rate": 12.13,
+      "low_review_rate": 20.56,
+      "revenue": 178947.81
+    },
+    {
+      "avg_delivery": 15.65,
+      "avg_review": 3.99,
+      "customer_state": "ES",
+      "items": 2256,
+      "late_rate": 12.06,
+      "low_review_rate": 15.91,
+      "revenue": 275037.31
+    },
+    {
+      "avg_delivery": 20.59,
+      "avg_review": 4.0,
+      "customer_state": "PB",
+      "items": 602,
+      "late_rate": 10.96,
+      "low_review_rate": 17.11,
+      "revenue": 115268.08
+    },
+    {
+      "avg_delivery": 15.53,
+      "avg_review": 4.04,
+      "customer_state": "MS",
+      "items": 819,
+      "late_rate": 10.74,
+      "low_review_rate": 16.48,
+      "revenue": 116812.64
+    },
+    {
+      "avg_delivery": 19.33,
+      "avg_review": 4.08,
+      "customer_state": "RN",
+      "items": 529,
+      "late_rate": 10.21,
+      "low_review_rate": 15.12,
+      "revenue": 83034.98
+    },
+    {
+      "avg_delivery": 18.28,
+      "avg_review": 3.95,
+      "customer_state": "PE",
+      "items": 1806,
+      "late_rate": 9.86,
+      "low_review_rate": 17.94,
+      "revenue": 262788.03
+    },
+    {
+      "avg_delivery": 15.0,
+      "avg_review": 4.0,
+      "customer_state": "SC",
+      "items": 4176,
+      "late_rate": 9.43,
+      "low_review_rate": 16.33,
+      "revenue": 520553.34
+    },
+    {
+      "avg_delivery": 15.4,
+      "avg_review": 3.99,
+      "customer_state": "GO",
+      "items": 2333,
+      "late_rate": 7.67,
+      "low_review_rate": 15.65,
+      "revenue": 294591.95
+    },
+    {
+      "avg_delivery": 12.96,
+      "avg_review": 4.01,
+      "customer_state": "DF",
+      "items": 2406,
+      "late_rate": 7.27,
+      "low_review_rate": 16.29,
+      "revenue": 302603.94
+    },
+    {
+      "avg_delivery": 15.19,
+      "avg_review": 4.05,
+      "customer_state": "RS",
+      "items": 6235,
+      "late_rate": 6.77,
+      "low_review_rate": 15.3,
+      "revenue": 750304.02
+    },
+    {
+      "avg_delivery": 17.96,
+      "avg_review": 3.98,
+      "customer_state": "MT",
+      "items": 1055,
+      "late_rate": 6.64,
+      "low_review_rate": 16.49,
+      "revenue": 156453.53
+    },
+    {
+      "avg_delivery": 8.72,
+      "avg_review": 4.13,
+      "customer_state": "SP",
+      "items": 47449,
+      "late_rate": 5.65,
+      "low_review_rate": 13.67,
+      "revenue": 5202955.05
+    },
+    {
+      "avg_delivery": 11.98,
+      "avg_review": 4.09,
+      "customer_state": "MG",
+      "items": 13129,
+      "late_rate": 5.35,
+      "low_review_rate": 14.43,
+      "revenue": 1585308.03
+    },
+    {
+      "avg_delivery": 11.95,
+      "avg_review": 4.11,
+      "customer_state": "PR",
+      "items": 5740,
+      "late_rate": 4.7,
+      "low_review_rate": 14.41,
+      "revenue": 683083.76
+    }
+  ],
   "reviewDistribution": [
     {
       "count": 11424,
