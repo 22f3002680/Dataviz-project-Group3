@@ -611,6 +611,13 @@ def build_dashboard_data(
             "pipelineVersion": 1,
         },
         "summary": summary,
+        "statusCounts": records(
+            tables["orders"]["order_status"]
+            .value_counts()
+            .sort_index()
+            .rename_axis("status")
+            .reset_index(name="orders")
+        ),
         "reviewDistribution": records(
             tables["reviews"]["review_score"]
             .value_counts()
