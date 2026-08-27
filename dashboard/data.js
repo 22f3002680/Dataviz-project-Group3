@@ -1,4 +1,58 @@
 window.DVD_DASHBOARD_DATA = {
+  "delayBins": [
+    {
+      "avg_review": 4.29,
+      "low_review_rate": 9.14,
+      "orders": 88644,
+      "range": "Early / on-time"
+    },
+    {
+      "avg_review": 3.77,
+      "low_review_rate": 18.9,
+      "orders": 2662,
+      "range": "1-3 days late"
+    },
+    {
+      "avg_review": 2.32,
+      "low_review_rate": 59.7,
+      "orders": 1819,
+      "range": "4-7 days late"
+    },
+    {
+      "avg_review": 1.75,
+      "low_review_rate": 76.2,
+      "orders": 1790,
+      "range": "8-14 days late"
+    },
+    {
+      "avg_review": 1.65,
+      "low_review_rate": 78.68,
+      "orders": 760,
+      "range": "15-21 days late"
+    },
+    {
+      "avg_review": 1.77,
+      "low_review_rate": 73.58,
+      "orders": 795,
+      "range": "22+ days late"
+    }
+  ],
+  "delayImpactSummary": [
+    {
+      "avg_delay_days": 9.55,
+      "avg_review": 2.57,
+      "low_review_rate": 52.85,
+      "orders": 7826,
+      "segment": "Late"
+    },
+    {
+      "avg_delay_days": -13.01,
+      "avg_review": 4.29,
+      "low_review_rate": 9.14,
+      "orders": 88644,
+      "segment": "On-time or early"
+    }
+  ],
   "deliveryBins": [
     {
       "avg_review": 4.48,
