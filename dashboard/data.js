@@ -935,6 +935,40 @@ window.DVD_DASHBOARD_DATA = {
       "segment": "Same state"
     }
   ],
+  "statusCounts": [
+    {
+      "orders": 2,
+      "status": "approved"
+    },
+    {
+      "orders": 625,
+      "status": "canceled"
+    },
+    {
+      "orders": 5,
+      "status": "created"
+    },
+    {
+      "orders": 96478,
+      "status": "delivered"
+    },
+    {
+      "orders": 314,
+      "status": "invoiced"
+    },
+    {
+      "orders": 301,
+      "status": "processing"
+    },
+    {
+      "orders": 1107,
+      "status": "shipped"
+    },
+    {
+      "orders": 609,
+      "status": "unavailable"
+    }
+  ],
   "summary": {
     "avgDeliveryDays": 12.6,
     "avgReview": 4.09,

@@ -30,3 +30,5 @@ See `docs/data_pipeline.md` for the cleaning, joins, and derived field definitio
 See `docs/metric_dictionary.md` for metric definitions and validation rules.
 See `docs/data_quality_audit.md` for schema joins, quality findings, and
 cleaning decisions.
+See `docs/eda/order_journey_eda.md` for the baseline order-journey EDA and
+reusable visuals.
