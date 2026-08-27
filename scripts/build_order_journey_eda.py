@@ -10,7 +10,6 @@ import pandas as pd
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-WORKBOOK = ROOT_DIR / "Dataviz_proj_all_datasets.xlsx"
 DATA_FILE = ROOT_DIR / "dashboard" / "data.js"
 OUTPUT_DIR = ROOT_DIR / "docs" / "eda"
 
@@ -32,16 +31,7 @@ def save_chart(name: str) -> None:
 def build_report(data: dict) -> str:
     summary = data["summary"]
     metadata = data["metadata"]
-    status = pd.Series({
-        "delivered": 96478,
-        "shipped": 1107,
-        "canceled": 625,
-        "unavailable": 609,
-        "invoiced": 314,
-        "processing": 301,
-        "created": 5,
-        "approved": 2,
-    })
+    status = pd.DataFrame(data["statusCounts"]).set_index("status")["orders"]
     review_frame = pd.DataFrame(data["reviewDistribution"])
     review_counts = review_frame.set_index("score")["count"]
     monthly_frame = pd.DataFrame(data["monthlyOrders"])
@@ -111,7 +101,7 @@ analyses.
 ## Scope and data handling
 
 - Source: `orders_dataset` and `order_reviews_dataset` through the validated dashboard pipeline.
-- One row in the order table represents one order; order IDs are checked for uniqueness.
+- One row in the order table represents one order; the upstream pipeline preserves the source row grain.
 - Review distribution uses review rows directly, so an order can contribute more than one review row if present.
 - A completed delivery means `order_status == delivered` and a non-missing `order_delivered_customer_date`, matching the project metric dictionary.
 - No orders are removed for this baseline overview. Missing timestamps and missing reviews follow the project metric dictionary denominator rules.
