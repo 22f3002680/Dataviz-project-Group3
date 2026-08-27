@@ -556,6 +556,29 @@ def main() -> None:
     checks += 1
     compare("sameState", same_state_summary(item_base), dashboard["sameState"], failures)
     checks += 1
+    states = state_summary(item_base)
+    compare(
+        "regionalDemand",
+        records(sort_rows(states, ["revenue", "customer_state"], [False, True])),
+        dashboard["regionalDemand"],
+        failures,
+    )
+    checks += 1
+    compare(
+        "regionalRisk",
+        records(
+            sort_rows(
+                state_summary(item_base[item_base["is_delivered"]]).loc[
+                    lambda frame: frame["items"] >= 500
+                ],
+                ["late_rate", "avg_delivery", "customer_state"],
+                [False, False, True],
+            )
+        ),
+        dashboard["regionalRisk"],
+        failures,
+    )
+    checks += 1
     compare(
         "growthCategories",
         expected_growth_categories(item_base),
