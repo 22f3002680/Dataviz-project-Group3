@@ -11,6 +11,7 @@ outcomes; it does not claim that delay alone proves causation.
 - Delivery-time analysis includes orders with `order_status == delivered` and a non-missing customer-delivery timestamp.
 - Delay is customer-delivery date minus estimated-delivery date. Values above zero are late.
 - A low review means score `<= 2`. Missing reviews are counted as not low in the late/on-time rate, matching the project metric dictionary.
+- Delivered orders with a missing estimated-delivery date have no delay value and remain in the on-time/early denominator, matching the existing `is_late` definition.
 - Average review scores ignore missing review scores.
 - Same-state results are item-level because shipment geography is joined to order items; they are context, not a separate causal test.
 
