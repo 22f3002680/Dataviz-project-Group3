@@ -30,6 +30,30 @@ button {
   font: inherit;
 }
 
+a:focus-visible,
+button:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  padding: 9px 12px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 700;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 .app {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
@@ -46,6 +70,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  overflow-y: auto;
 }
 
 .sidebar h1 {
@@ -77,6 +102,7 @@ button {
 
 .reports-link {
   display: block;
+  margin-top: auto;
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 8px;
@@ -88,7 +114,6 @@ button {
 .reports-link:hover,
 .reports-link:focus-visible {
   background: rgba(255, 255, 255, 0.08);
-  outline: none;
 }
 
 .tab {
@@ -105,7 +130,6 @@ button {
 .tab:hover,
 .tab:focus-visible {
   background: rgba(255, 255, 255, 0.08);
-  outline: none;
 }
 
 .tab.active {
@@ -222,9 +246,17 @@ button {
   font-size: 13px;
 }
 
+.chart-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
 .chart {
+  display: block;
   width: 100%;
-  min-height: 260px;
+  height: auto;
 }
 
 .chart text {
@@ -264,8 +296,22 @@ button {
   stroke-width: 2;
 }
 
+.chart .legend {
+  font-weight: 700;
+}
+
+.chart .teal-text {
+  fill: var(--teal);
+}
+
+.chart .rose-text {
+  fill: var(--rose);
+}
+
 .table-wrap {
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
 }
 
 table {
@@ -293,6 +339,86 @@ th {
 td.numeric,
 th.numeric {
   text-align: right;
+}
+
+tbody tr:hover td {
+  background: #f8fafc;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.empty-state,
+.load-error {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--muted);
+}
+
+.load-error {
+  display: grid;
+  gap: 4px;
+  margin: 20px;
+}
+
+.funnel-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 14px;
+  border-block: 1px solid var(--line);
+}
+
+.funnel-metric {
+  min-width: 0;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+}
+
+.funnel-metric:last-child {
+  border-right: 0;
+}
+
+.panel .funnel-metric .metric-label {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.panel .funnel-metric .metric-value {
+  margin: 0;
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.panel .funnel-metric .metric-value.compact {
+  font-size: 20px;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 9px 12px;
+  border: 1px solid #0f6570;
+  border-radius: 6px;
+  color: #0f6570;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background: #ecfeff;
 }
 
 .insight-list {
@@ -329,16 +455,28 @@ th.numeric {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .kpis,
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .grid,
   .grid.three {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .content {
+  .sidebar {
     padding: 18px;
+    gap: 16px;
+  }
+
+  .sidebar h1 {
+    font-size: 22px;
+  }
+
+  .content {
+    padding: 16px;
   }
 
   .topbar {
@@ -350,10 +488,48 @@ th.numeric {
     margin-top: 12px;
   }
 
-  .tabs,
   .kpis,
   .grid,
   .grid.three {
     grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .reports-link {
+    margin-top: 0;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .chart {
+    width: 640px;
+    min-width: 640px;
+  }
+
+  .table-wrap th:first-child,
+  .table-wrap td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #ffffff;
+    box-shadow: 1px 0 0 var(--line);
+  }
+
+  .funnel-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .funnel-metric:nth-child(2) {
+    border-right: 0;
+  }
+
+  .funnel-metric:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
   }
 }
