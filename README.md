@@ -34,3 +34,15 @@ See `docs/eda/order_journey_eda.md` for the baseline order-journey EDA and
 reusable visuals.
 See `docs/eda/delivery_delay_impact.md` for the delivery delay and review
 impact analysis.
+See `docs/eda/marketing_funnel_analysis.md` for the reproducible MQL conversion,
+seller linkage, and equal-window post-acquisition analysis.
+
+Live reports: https://22f3002680.github.io/Dataviz-project-Group3/reports/index.html
+
+Rebuild and validate the Issue #10 report with:
+
+```bash
+python3 scripts/build_marketing_funnel_analysis.py
+python3 scripts/build_live_report_pages.py
+python3 scripts/validate_marketing_funnel_analysis.py
+```
