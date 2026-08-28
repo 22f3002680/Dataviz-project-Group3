@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Issue 10: Marketing funnel | DVD Project</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a href="../index.html">DVD Project dashboard</a>
+      <nav aria-label="Report navigation"><a href="./index.html">All reports</a></nav>
+    </header>
+    <main class="report-page"><h1>Marketing Funnel and Seller Acquisition Analysis</h1>
+<p>This Issue #10 report is generated from the committed workbook by <code>scripts/build_marketing_funnel_analysis.py</code>. It replaces the Colab-only workflow with a deterministic repository-owned analysis.</p>
+<h2>Decision</h2>
+<p>Use the marketing funnel as <strong>supporting evidence</strong>, not as the core marketplace growth argument. The MQL-to-deal join is complete, but only <strong>380 of 842 closed sellers (45.13%)</strong> appear in marketplace order items. Acquisition origin can therefore be associated with observed outcomes for a limited subset, but it cannot be treated as the cause of those outcomes.</p>
+<h2>Funnel baseline</h2>
+<table><thead><tr>
+<th>Metric</th>
+<th>Result</th>
+</tr></thead><tbody>
+<tr><td>Marketing-qualified leads</td><td>8,000</td></tr>
+<tr><td>Closed deals observed</td><td>842</td></tr>
+<tr><td>Observed conversion rate</td><td>10.53%</td></tr>
+<tr><td>Closed deals matched to an MQL</td><td>842</td></tr>
+<tr><td>Closed sellers linked to marketplace items</td><td>380</td></tr>
+<tr><td>Marketplace linkage coverage</td><td>45.13%</td></tr>
+</tbody></table>
+<p>"Observed conversion" means a matching closed-deal record exists in the dataset. The remaining leads are <strong>not observed as won by the dataset snapshot</strong>; they are not proven losses.</p>
+<h2>Conversion by marketing origin</h2>
+<figure><img src="assets/marketing_funnel_conversion_by_origin.png" alt="Observed conversion by marketing origin"><figcaption>Observed conversion by marketing origin</figcaption></figure>
+<table><thead><tr>
+<th>Origin</th>
+<th>MQLs</th>
+<th>Observed wins</th>
+<th>Not observed as won</th>
+<th>Conversion rate</th>
+</tr></thead><tbody>
+<tr><td>organic_search</td><td>2,296</td><td>271</td><td>2,025</td><td>11.80%</td></tr>
+<tr><td>paid_search</td><td>1,586</td><td>195</td><td>1,391</td><td>12.30%</td></tr>
+<tr><td>social</td><td>1,350</td><td>75</td><td>1,275</td><td>5.56%</td></tr>
+<tr><td>Unknown / missing</td><td>1,159</td><td>193</td><td>966</td><td>16.65%</td></tr>
+<tr><td>direct_traffic</td><td>499</td><td>56</td><td>443</td><td>11.22%</td></tr>
+<tr><td>email</td><td>493</td><td>15</td><td>478</td><td>3.04%</td></tr>
+<tr><td>referral</td><td>284</td><td>24</td><td>260</td><td>8.45%</td></tr>
+<tr><td>other</td><td>150</td><td>4</td><td>146</td><td>2.67%</td></tr>
+<tr><td>display</td><td>118</td><td>6</td><td>112</td><td>5.08%</td></tr>
+<tr><td>other_publicities</td><td>65</td><td>3</td><td>62</td><td>4.62%</td></tr>
+</tbody></table>
+<p>Among known origins with at least 400 MQLs, the origins at or above the overall rate are <strong>organic_search, paid_search, direct_traffic</strong>. The below-benchmark diagnostic queue is <strong>social, email</strong>. This is a queue for investigation, not a budget-allocation recommendation, because spend, acquisition cost, lead quality, and opportunity value are unavailable.</p>
+<p><code>unknown</code> and blank origins are normalized into one <strong>Unknown / missing</strong> category. It contains <strong>1,159 MQLs</strong> and <strong>193 observed wins</strong>. Its apparent conversion rate is an attribution-quality signal, not evidence that an unknown channel performs well.</p>
+<h2>Contact-month context</h2>
+<table><thead><tr>
+<th>First-contact month</th>
+<th>MQLs</th>
+<th>Observed wins</th>
+<th>Conversion rate</th>
+</tr></thead><tbody>
+<tr><td>2017-06</td><td>4</td><td>0</td><td>0.00%</td></tr>
+<tr><td>2017-07</td><td>239</td><td>2</td><td>0.84%</td></tr>
+<tr><td>2017-08</td><td>386</td><td>9</td><td>2.33%</td></tr>
+<tr><td>2017-09</td><td>312</td><td>7</td><td>2.24%</td></tr>
+<tr><td>2017-10</td><td>416</td><td>14</td><td>3.37%</td></tr>
+<tr><td>2017-11</td><td>445</td><td>18</td><td>4.04%</td></tr>
+<tr><td>2017-12</td><td>200</td><td>11</td><td>5.50%</td></tr>
+<tr><td>2018-01</td><td>1,141</td><td>152</td><td>13.32%</td></tr>
+<tr><td>2018-02</td><td>1,028</td><td>149</td><td>14.49%</td></tr>
+<tr><td>2018-03</td><td>1,174</td><td>167</td><td>14.22%</td></tr>
+<tr><td>2018-04</td><td>1,352</td><td>183</td><td>13.54%</td></tr>
+<tr><td>2018-05</td><td>1,303</td><td>130</td><td>9.98%</td></tr>
+</tbody></table>
+<p>Contact-month conversion is descriptive. Later cohorts can have less time to close before the dataset snapshot, so month-to-month changes must not be read as pure marketing-performance changes without a common lead-maturity window.</p>
+<p>Landing-page analysis is retained only as an exploratory check. Pages require at least <strong>20 MQLs</strong>, leaving <strong>64 pages</strong>. The IDs are opaque and multiple comparisons remain noisy, so landing pages are excluded from the final recommendation.</p>
+<h2>Comparable seller outcomes</h2>
+<p>The marketplace seller comparison uses the first <strong>30 days after each seller's <code>won_date</code></strong>. A seller is eligible only if all 30 days occur on or before the final item-backed marketplace purchase date, <strong>2018-09-03</strong>. The eligibility cutoff is <strong>2018-08-04</strong>, leaving <strong>762 closed sellers</strong> with equal follow-up and <strong>128</strong> with at least one observed seller-order in that window.</p>
+<table><thead><tr>
+<th>Origin</th>
+<th>Closed</th>
+<th>Linked</th>
+<th>Eligible</th>
+<th>Active in 30d</th>
+<th>Activation</th>
+<th>Orders per active seller</th>
+<th>Product revenue per active seller</th>
+<th>Average review</th>
+<th>Low-review rate</th>
+</tr></thead><tbody>
+<tr><td>organic_search</td><td>271</td><td>113</td><td>239</td><td>42</td><td>17.57%</td><td>2.31</td><td>266.88</td><td>4.45</td><td>10.42%</td></tr>
+<tr><td>Unknown / missing</td><td>193</td><td>85</td><td>183</td><td>30</td><td>16.39%</td><td>4.77</td><td>1,079.66</td><td>3.78</td><td>23.53%</td></tr>
+<tr><td>paid_search</td><td>195</td><td>101</td><td>169</td><td>31</td><td>18.34%</td><td>5.19</td><td>638.40</td><td>4.38</td><td>8.92%</td></tr>
+<tr><td>social</td><td>75</td><td>31</td><td>68</td><td>7</td><td>10.29%</td><td>4.71</td><td>229.36</td><td>4.25</td><td>9.38%</td></tr>
+<tr><td>direct_traffic</td><td>56</td><td>31</td><td>54</td><td>11</td><td>20.37%</td><td>1.91</td><td>170.06</td><td>4.10</td><td>10.00%</td></tr>
+<tr><td>referral</td><td>24</td><td>9</td><td>22</td><td>5</td><td>22.73%</td><td>2.20</td><td>775.72</td><td>4.82</td><td>0.00%</td></tr>
+<tr><td>email</td><td>15</td><td>6</td><td>14</td><td>1</td><td>7.14%</td><td>6.00</td><td>148.00</td><td>4.33</td><td>16.67%</td></tr>
+<tr><td>display</td><td>6</td><td>2</td><td>6</td><td>0</td><td>0.00%</td><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>
+<tr><td>other</td><td>4</td><td>2</td><td>4</td><td>1</td><td>25.00%</td><td>19.00</td><td>1,088.79</td><td>4.00</td><td>15.79%</td></tr>
+<tr><td>other_publicities</td><td>3</td><td>0</td><td>3</td><td>0</td><td>0.00%</td><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>
+</tbody></table>
+<p>Product revenue is the sum of item <code>price</code> and excludes freight. Activation uses all eligible closed sellers as its denominator. Per-seller order and revenue metrics use active sellers as their denominator.</p>
+<p>Review metrics use one order-level review rollup joined only to single-seller orders. This keeps the review numerator and denominator at the same reviewed seller-order grain and avoids assigning one multi-seller order review to several sellers. Low review means an order-level average review score of 2 or less.</p>
+<h2>Limitations</h2>
+<ul>
+<li>Only 45.13% of closed sellers link to marketplace items.</li>
+<li>No linked seller has an item-backed marketplace order before <code>won_date</code>, which supports using that date as the start of the fixed outcome window.</li>
+<li>Marketing origin is observational and cannot establish causality.</li>
+<li>The 30-day window improves comparability but captures only early seller outcomes and may miss later activation.</li>
+<li>Multi-seller orders are excluded from review comparisons; order-level reviews cannot be attributed reliably to one seller in those orders.</li>
+<li>Missing/unknown origin represents an attribution problem, not a real channel.</li>
+<li>Funnel dates cover 2017-06-14 to 2018-05-31 for first contact and 2017-12-05 to 2018-11-14 for observed wins.</li>
+</ul>
+<h2>Recommendation</h2>
+<p>Use paid, organic, direct, social, and email results to form diagnostic questions for the marketing team. Investigate why high-volume below-benchmark origins have many leads not observed as won, and repair origin attribution before comparing channel efficiency. Do not shift spend from this dataset alone. Keep the final marketplace-growth story centered on orders, delivery, products, sellers, and regions; use this funnel section as acquisition context.</p>
+<h2>Reproduction and validation</h2>
+<pre><code>python3 scripts/build_marketing_funnel_analysis.py
+python3 scripts/build_live_report_pages.py
+python3 scripts/validate_marketing_funnel_analysis.py</code></pre>
+<p>The build command regenerates this report and its PNG chart in <code>docs/eda/</code>. The validation command checks source keys, totals, linkage, bounded rates, equal-window eligibility, single-seller review attribution, report values, and published-page generation.</p></main>
+  </body>
+</html>
