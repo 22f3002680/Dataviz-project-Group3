@@ -11,6 +11,17 @@ Live dashboard: https://22f3002680.github.io/Dataviz-project-Group3/
 
 The dashboard is a static GitHub Pages site in `dashboard/`.
 
+## Final Deliverables
+
+- [Final technical report (Google Docs)](https://docs.google.com/document/d/10zrbGT52cCArMm5L8SqdSxQ9qCn2YxASzopuL5tOMks/edit)
+- [Final technical report (PDF)](docs/final_report.pdf)
+- [Final technical report source](docs/final_report.md)
+- [Interactive dashboard](https://22f3002680.github.io/Dataviz-project-Group3/)
+- [Supporting analysis reports](https://22f3002680.github.io/Dataviz-project-Group3/reports/index.html)
+
+The report includes placeholders for team names, roll numbers, roles, and
+individual contribution logs. Complete these fields before submission.
+
 ## Rebuild Dashboard Data
 
 The dashboard reads precomputed data from `dashboard/data.js`. Rebuild it from the
