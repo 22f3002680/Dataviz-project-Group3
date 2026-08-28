@@ -36,6 +36,8 @@ See `docs/eda/delivery_delay_impact.md` for the delivery delay and review
 impact analysis.
 See `docs/eda/marketing_funnel_analysis.md` for the reproducible MQL conversion,
 seller linkage, and equal-window post-acquisition analysis.
+See `docs/dashboard_qa.md` for the dashboard viewport, interaction,
+accessibility, and deployment acceptance checks.
 
 Live reports: https://22f3002680.github.io/Dataviz-project-Group3/reports/index.html
 

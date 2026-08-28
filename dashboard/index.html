@@ -3,10 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Marketplace growth, delivery reliability, seller performance, and customer satisfaction dashboard.">
+    <meta name="theme-color" content="#111827">
     <title>E-Commerce Satisfaction Dashboard</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to dashboard content</a>
     <div class="app">
       <aside class="sidebar">
         <div>
@@ -14,31 +18,32 @@
           <h1>E-Commerce Satisfaction Dashboard</h1>
           <p class="subhead">Marketplace growth, delivery reliability, and customer experience signals.</p>
         </div>
-        <nav class="tabs" aria-label="Dashboard sections">
-          <button class="tab active" data-view="overview" type="button">Overview</button>
-          <button class="tab" data-view="delivery" type="button">Delivery</button>
-          <button class="tab" data-view="categories" type="button">Categories</button>
-          <button class="tab" data-view="regions" type="button">Regions</button>
-          <button class="tab" data-view="sellers" type="button">Sellers</button>
-          <button class="tab" data-view="growth" type="button">Growth</button>
+        <nav class="tabs" aria-label="Dashboard sections" role="tablist">
+          <button class="tab active" id="tab-overview" data-view="overview" type="button" role="tab" aria-controls="view-root" aria-selected="true">Overview</button>
+          <button class="tab" id="tab-delivery" data-view="delivery" type="button" role="tab" aria-controls="view-root" aria-selected="false" tabindex="-1">Delivery</button>
+          <button class="tab" id="tab-categories" data-view="categories" type="button" role="tab" aria-controls="view-root" aria-selected="false" tabindex="-1">Categories</button>
+          <button class="tab" id="tab-regions" data-view="regions" type="button" role="tab" aria-controls="view-root" aria-selected="false" tabindex="-1">Regions</button>
+          <button class="tab" id="tab-sellers" data-view="sellers" type="button" role="tab" aria-controls="view-root" aria-selected="false" tabindex="-1">Sellers</button>
+          <button class="tab" id="tab-growth" data-view="growth" type="button" role="tab" aria-controls="view-root" aria-selected="false" tabindex="-1">Growth</button>
         </nav>
         <a class="reports-link" href="./reports/index.html">Reports &amp; methods</a>
       </aside>
 
-      <main class="content">
+      <main class="content" id="main-content">
         <header class="topbar">
           <div>
             <p class="eyebrow">Goal</p>
             <h2>Grow the marketplace without breaking customer experience</h2>
           </div>
-          <div class="badge">GitHub Pages build</div>
+          <div class="badge" title="Static dashboard published from the validated project data">Validated static build</div>
         </header>
 
-        <section class="kpis" id="kpis"></section>
-        <section id="view-root"></section>
+        <section class="kpis" id="kpis" aria-label="Marketplace summary metrics"></section>
+        <section id="view-root" role="tabpanel" aria-labelledby="tab-overview" tabindex="0"></section>
       </main>
     </div>
 
+    <noscript><p class="load-error">JavaScript is required to render this dashboard.</p></noscript>
     <script src="./data.js"></script>
     <script src="./app.js"></script>
   </body>
