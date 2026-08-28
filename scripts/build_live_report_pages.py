@@ -16,6 +16,7 @@ REPORTS = [
     ("order-journey", "Issue 5: Order journey and satisfaction", "order_journey_eda.md"),
     ("delivery-impact", "Issue 6: Delivery delay impact", "delivery_delay_impact.md"),
     ("regional-analysis", "Issue 9: Regional demand and risk", "regional_analysis.md"),
+    ("marketing-funnel", "Issue 10: Marketing funnel", "marketing_funnel_analysis.md"),
 ]
 STATIC_REPORTS = [
     ("product-analysis", "Issue 7: Product category analysis",
@@ -30,26 +31,57 @@ STATIC_REPORTS = [
 def inline(value: str) -> str:
     value = html.escape(value, quote=False)
     value = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", value)
+    value = re.sub(r"`([^`]+)`", r"<code>\1</code>", value)
+    value = re.sub(
+        r"\[([^]]+)\]\((https?://[^)]+)\)",
+        r'<a href="\2">\1</a>',
+        value,
+    )
     return value
 
 
 def markdown_to_html(text: str) -> str:
     output: list[str] = []
     in_table = False
-    in_list = False
+    paragraph: list[str] = []
+    list_items: list[str] = []
+    code_lines: list[str] = []
+    in_code = False
+
+    def close_paragraph() -> None:
+        if paragraph:
+            output.append(f"<p>{inline(' '.join(paragraph))}</p>")
+            paragraph.clear()
+
+    def close_list() -> None:
+        if list_items:
+            output.append("<ul>")
+            output.extend(f"<li>{inline(item)}</li>" for item in list_items)
+            output.append("</ul>")
+            list_items.clear()
 
     def close_blocks() -> None:
-        nonlocal in_table, in_list
+        nonlocal in_table
+        close_paragraph()
+        close_list()
         if in_table:
             output.append("</tbody></table>")
             in_table = False
-        if in_list:
-            output.append("</ul>")
-            in_list = False
 
     for line in text.splitlines():
         if line.startswith(chr(96) * 3):
-            close_blocks()
+            if in_code:
+                output.append(
+                    f"<pre><code>{html.escape(chr(10).join(code_lines))}</code></pre>"
+                )
+                code_lines.clear()
+                in_code = False
+            else:
+                close_blocks()
+                in_code = True
+            continue
+        if in_code:
+            code_lines.append(line)
             continue
         if not line.strip():
             close_blocks()
@@ -67,11 +99,12 @@ def markdown_to_html(text: str) -> str:
             output.append(f"<h{level}>{inline(line[level:].strip())}</h{level}>")
             continue
         if line.startswith("|") and line.endswith("|"):
+            close_paragraph()
+            close_list()
             cells = [cell.strip() for cell in line.strip("|").split("|")]
             if all(set(cell) <= {"-", ":"} for cell in cells):
                 continue
             if not in_table:
-                close_blocks()
                 output.append("<table><thead><tr>")
                 output.extend(f"<th>{inline(cell)}</th>" for cell in cells)
                 output.append("</tr></thead><tbody>")
@@ -81,14 +114,20 @@ def markdown_to_html(text: str) -> str:
             continue
         if line.startswith("- "):
             if in_table:
-                close_blocks()
-            if not in_list:
-                output.append("<ul>")
-                in_list = True
-            output.append(f"<li>{inline(line[2:])}</li>")
+                output.append("</tbody></table>")
+                in_table = False
+            close_paragraph()
+            list_items.append(line[2:].strip())
             continue
-        close_blocks()
-        output.append(f"<p>{inline(line)}</p>")
+        if list_items:
+            list_items[-1] += " " + line.strip()
+        else:
+            if in_table:
+                output.append("</tbody></table>")
+                in_table = False
+            paragraph.append(line.strip())
+    if in_code:
+        output.append(f"<pre><code>{html.escape(chr(10).join(code_lines))}</code></pre>")
     close_blocks()
     return "\n".join(output)
 
