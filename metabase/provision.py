@@ -1,21 +1,30 @@
 #!/usr/bin/env python3
-"""Rebuild per teammate feedback (project-materials doc). Phase 1: content.
+"""Build the consolidated weekly dashboard (Overview / Product / Seller).
+
+Implements the teammate-feedback doc:
+- Common KPI strip on every tab; clean de-underscored labels.
 - Overview: dynamic cumulative volume (<= selected week), orders-by-state +
   late-delivery choropleth with a named worst-states table, top/bottom 3
-  products & sellers for the week. Removes the late-rate/review line.
-- Product: merged orders+delayed bar (delays in a second colour), a diverging
-  review-change bar (this week vs prior), and a categories-needing-intervention
-  table. Removes the Category week-over-week table.
-- Seller: same merge + diverging seller review-change bar + sellers-needing-
-  attention table (placeholder for the geolocation alternative-seller feature).
-- Common KPI strip on every tab; clean de-underscored labels.
+  products & sellers.
+- Product: merged orders+delayed bar, diverging review-change bar, categories
+  needing intervention.
+- Seller: merged orders+delayed bar, diverging review-change bar, and
+  alternative-seller suggestions (nearest healthy same-category seller, via
+  geolocation) for sellers doing poorly this week.
+- Cross-filter: a State filter (dropdown + click a state on the map/bar) filters
+  the Overview KPIs and the volume trend.
+
+Prereqs: schema.sql + marts.sql + geo_marts.sql loaded; register_map.py run.
 """
 from __future__ import annotations
 import json, urllib.request, urllib.error, uuid
 
 MB = "http://localhost:3000"
 EMAIL, PASS = "admin@dvd.local", "Dvdproj123!"
-DEFAULT_WEEK, PARAM, DB_ID = "2018-08-13", "week_param", 2
+DEFAULT_WEEK, DB_ID = "2018-08-13", 2
+WEEKP, STATEP = "week_param", "state_param"
+UFS = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+       "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"]
 tok = {"t": None}
 
 
@@ -37,52 +46,70 @@ def login():
     tok["t"] = api("POST", "/api/session", {"username": EMAIL, "password": PASS})["id"]
 
 
-def wtag():
-    return {"week": {"id": str(uuid.uuid4()), "name": "week", "display-name": "Week (Mon)",
-                     "type": "date", "default": DEFAULT_WEEK, "required": True}}
+def tags(state=False):
+    t = {"week": {"id": str(uuid.uuid4()), "name": "week", "display-name": "Week (Mon)",
+                  "type": "date", "default": DEFAULT_WEEK, "required": True}}
+    if state:
+        t["state"] = {"id": str(uuid.uuid4()), "name": "state", "display-name": "State",
+                      "type": "text", "required": False}
+    return t
 
 
-def card(name, sql, display="table", viz=None):
+def card(name, sql, display="table", viz=None, state=False):
     return api("POST", "/api/card", {
         "name": name, "display": display, "visualization_settings": viz or {},
         "dataset_query": {"type": "native", "database": DB_ID,
-                          "native": {"query": sql, "template-tags": wtag()}}})["id"]
+                          "native": {"query": sql, "template-tags": tags(state)}}})["id"]
 
 
-def dc(cid, tab, row, col, w, h):
+def dc(cid, tab, row, col, w, h, state=False, click=False):
+    maps = [{"parameter_id": WEEKP, "card_id": cid, "target": ["variable", ["template-tag", "week"]]}]
+    if state:
+        maps.append({"parameter_id": STATEP, "card_id": cid,
+                     "target": ["variable", ["template-tag", "state"]]})
+    viz = {}
+    if click:
+        viz = {"click_behavior": {"type": "crossfilter", "parameterMapping": {
+            STATEP: {"id": STATEP,
+                     "source": {"type": "column", "id": "customer_state", "name": "customer_state"},
+                     "target": {"type": "parameter", "id": STATEP}}}}}
     return {"id": -(abs(tab) * 1000 + row * 30 + col + 1), "card_id": cid,
             "dashboard_tab_id": tab, "row": row, "col": col, "size_x": w, "size_y": h,
-            "series": [], "visualization_settings": {},
-            "parameter_mappings": [{"parameter_id": PARAM, "card_id": cid,
-                                    "target": ["variable", ["template-tag", "week"]]}]}
+            "series": [], "visualization_settings": viz, "parameter_mappings": maps}
 
 
 def main():
     login()
     W = "WHERE purchase_week = {{week}}"
+    ST = "[[AND customer_state = {{state}}]]"
 
-    # KPI strip
-    k = {
-        "Orders this week": card("Orders this week", f"SELECT orders FROM weekly_overview {W}", "scalar"),
-        "Delivered this week": card("Delivered this week", f"SELECT delivered FROM weekly_overview {W}", "scalar"),
-        "Delayed this week": card("Delayed this week", f"SELECT late_orders FROM weekly_overview {W}", "scalar"),
-        "Avg review this week": card("Avg review this week", f"SELECT avg_review FROM weekly_overview {W}", "scalar"),
-        "Orders WoW %": card("Orders WoW %",
-            "WITH s AS (SELECT {{week}}::date w) SELECT ROUND(100.0*(c.orders-p.orders)/NULLIF(p.orders,0),1) "
-            "FROM s JOIN weekly_overview c ON c.purchase_week=s.w "
-            "LEFT JOIN weekly_overview p ON p.purchase_week=s.w-7", "scalar"),
-        "Best week (orders)": card("Best week (orders)", "SELECT MAX(orders) FROM weekly_overview", "scalar"),
-    }
+    # ---- KPI strip (state-aware, from order_base) ----
+    k_ord = card("Orders this week", f"SELECT COUNT(*) FROM order_base {W} {ST}", "scalar", state=True)
+    k_del = card("Delivered this week",
+                 f"SELECT COUNT(*) FILTER (WHERE is_delivered) FROM order_base {W} {ST}", "scalar", state=True)
+    k_late = card("Delayed this week",
+                  f"SELECT COUNT(*) FILTER (WHERE is_late) FROM order_base {W} {ST}", "scalar", state=True)
+    k_rev = card("Avg review this week",
+                 f"SELECT ROUND(AVG(review_score),2) FROM order_base {W} {ST}", "scalar", state=True)
+    k_wow = card("Orders WoW %",
+                 "SELECT ROUND(100.0*(c.o-p.o)/NULLIF(p.o,0),1) FROM "
+                 f"(SELECT COUNT(*) o FROM order_base WHERE purchase_week={{{{week}}}} {ST}) c, "
+                 f"(SELECT COUNT(*) o FROM order_base WHERE purchase_week={{{{week}}}}::date-7 {ST}) p",
+                 "scalar", state=True)
+    k_best = card("Best week (orders)",
+                  "SELECT MAX(o) FROM (SELECT purchase_week, COUNT(*) o FROM order_base "
+                  f"WHERE TRUE {ST} GROUP BY 1) t", "scalar", state=True)
 
     def strip(tab):
-        ks = list(k.values())
-        return [dc(ks[i], tab, 0, i * 4, 4, 2) for i in range(6)]
+        ks = [k_ord, k_del, k_late, k_rev, k_wow, k_best]
+        return [dc(ks[i], tab, 0, i * 4, 4, 2, state=True) for i in range(6)]
 
     # ---- Overview ----
     ov_vol = card("Weekly order volume (up to selected week)",
-                  "SELECT purchase_week, orders FROM weekly_overview "
-                  "WHERE purchase_week <= {{week}} AND purchase_week >= '2016-12-01' ORDER BY 1", "line",
-                  {"graph.dimensions": ["purchase_week"], "graph.metrics": ["orders"]})
+                  "SELECT purchase_week, COUNT(*) AS orders FROM order_base "
+                  f"WHERE purchase_week <= {{{{week}}}} AND purchase_week >= '2016-12-01' {ST} "
+                  "GROUP BY 1 ORDER BY 1", "line",
+                  {"graph.dimensions": ["purchase_week"], "graph.metrics": ["orders"]}, state=True)
     ov_state = card("Orders by state (this week)",
                     f"SELECT customer_state, COUNT(*) AS orders FROM order_base {W} "
                     "GROUP BY 1 ORDER BY orders DESC LIMIT 15", "row",
@@ -142,10 +169,15 @@ def main():
                   "WHERE c.purchase_week=s.w AND c.avg_review IS NOT NULL AND p.avg_review IS NOT NULL "
                   "ORDER BY review_change", "row",
                   {"graph.dimensions": ["seller"], "graph.metrics": ["review_change"]})
-    sl_att = card("Sellers needing attention (this week)",
-                  "SELECT LEFT(seller_id,10) AS seller, seller_state, avg_review, late_orders, orders "
-                  f"FROM weekly_seller {W} AND (avg_review < 4 OR late_orders > 0) "
-                  "ORDER BY avg_review ASC NULLS LAST, late_orders DESC")
+    sl_alt = card("Poor sellers this week -> suggested alternative (nearest healthy, same category)",
+                  "SELECT LEFT(ws.seller_id,8) AS poor_seller, ws.seller_state AS state, "
+                  "ws.avg_review, ws.late_orders, "
+                  "LEFT(sa.alt_seller_id,8) AS suggested_alt, sa.alt_state, "
+                  "INITCAP(REPLACE(sa.shared_category,'_',' ')) AS shared_category, "
+                  "sa.distance_km, sa.alt_avg_review "
+                  "FROM weekly_seller ws JOIN seller_alternatives sa ON sa.poor_seller_id = ws.seller_id "
+                  f"{W.replace('WHERE','WHERE ws.')} AND (ws.avg_review < 4 OR ws.late_orders > 0) "
+                  "ORDER BY ws.avg_review ASC NULLS LAST, ws.late_orders DESC")
 
     dash = api("POST", "/api/dashboard", {"name": "Group 3 · Marketplace Weekly Dashboard"})["id"]
     T_O, T_P, T_S = -1, -2, -3
@@ -153,18 +185,24 @@ def main():
 
     cards = []
     cards += strip(T_O) + [
-        dc(ov_vol, T_O, 2, 0, 12, 5), dc(ov_state, T_O, 2, 12, 12, 5),
-        dc(ov_map, T_O, 7, 0, 12, 6), dc(ov_worst, T_O, 7, 12, 12, 6),
+        dc(ov_vol, T_O, 2, 0, 12, 5, state=True), dc(ov_state, T_O, 2, 12, 12, 5, click=True),
+        dc(ov_map, T_O, 7, 0, 12, 6, click=True), dc(ov_worst, T_O, 7, 12, 12, 6),
         dc(ov_prod, T_O, 13, 0, 12, 4), dc(ov_sell, T_O, 13, 12, 12, 4)]
     cards += strip(T_P) + [
         dc(pr_merge, T_P, 2, 0, 24, 6),
         dc(pr_div, T_P, 8, 0, 12, 5), dc(pr_int, T_P, 8, 12, 12, 5)]
     cards += strip(T_S) + [
         dc(sl_merge, T_S, 2, 0, 24, 6),
-        dc(sl_div, T_S, 8, 0, 12, 5), dc(sl_att, T_S, 8, 12, 12, 5)]
+        dc(sl_div, T_S, 8, 0, 12, 5), dc(sl_alt, T_S, 8, 12, 12, 5)]
 
-    params = [{"id": PARAM, "name": "Week (Mon)", "slug": "week",
-               "type": "date/single", "sectionId": "date", "default": DEFAULT_WEEK}]
+    params = [
+        {"id": WEEKP, "name": "Week (Mon)", "slug": "week", "type": "date/single",
+         "sectionId": "date", "default": DEFAULT_WEEK},
+        {"id": STATEP, "name": "State", "slug": "state", "type": "string/=",
+         "sectionId": "string",
+         "values_source_type": "static-list",
+         "values_source_config": {"values": UFS}},
+    ]
     api("PUT", f"/api/dashboard/{dash}", {"parameters": params, "tabs": tabs, "dashcards": cards})
 
     for d in api("GET", "/api/dashboard"):

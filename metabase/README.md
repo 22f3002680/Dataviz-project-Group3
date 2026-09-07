@@ -23,18 +23,26 @@ Admin login: `admin@dvd.local` / `Dvdproj123!`
 ## Rebuild from scratch
 
 ```bash
-# 1. Export the cleaned master tables (order + item grain) to CSV
-python3 scripts/build_metabase_tables.py
+# 1. Export the cleaned master tables + seller coordinates to CSV
+python3 scripts/build_metabase_tables.py   # order_base + item_base
+python3 scripts/build_seller_geo.py        # seller_geo (for alternative-seller suggestions)
 
-# 2. Start Postgres + Metabase and load schema.sql (data) + marts.sql (views)
+# 2. Start Postgres + Metabase and load schema.sql (data) + marts.sql + geo_marts.sql (views)
 bash metabase/setup_stack.sh
 docker cp metabase/marts.sql dvd-postgres:/marts.sql
 docker exec dvd-postgres psql -U olist -d olist -f /marts.sql
+docker cp metabase/geo_marts.sql dvd-postgres:/geo_marts.sql
+docker exec dvd-postgres psql -U olist -d olist -f /geo_marts.sql
 
 # 3. Wait ~1-2 min for Metabase to boot, then register the map + build the dashboard
 python3 metabase/register_map.py   # register the Brazil-states choropleth GeoJSON
 python3 metabase/provision.py      # build the one tabbed dashboard (Overview/Product/Seller)
 ```
+
+The dashboard has a **Week** filter and a **State** cross-filter (dropdown, or
+click a state on the map / bar) that filters the Overview KPIs and volume trend.
+The Seller tab suggests, for each seller doing poorly this week, the nearest
+healthy seller selling the same category (haversine on `seller_geo`).
 
 `provision.py` is one-shot but archives any earlier `Group 3 ·` dashboard on each
 run, so re-running is safe (it leaves the newest one active).
