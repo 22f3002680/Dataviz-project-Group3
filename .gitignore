@@ -5,3 +5,7 @@ dist/
 __pycache__/
 .pytest_cache/
 *.pyc
+
+# Metabase generated data + fetched Drive files
+metabase/data/
+drive_files/
