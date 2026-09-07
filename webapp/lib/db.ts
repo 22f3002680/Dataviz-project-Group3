@@ -12,6 +12,8 @@ export const pool =
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     max: 5,
+    statement_timeout: 20000,
+    query_timeout: 20000,
   });
 
 if (process.env.NODE_ENV !== "production") g._pgPool = pool;
