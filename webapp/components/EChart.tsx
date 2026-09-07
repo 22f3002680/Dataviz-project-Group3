@@ -4,12 +4,12 @@ import * as echarts from "echarts";
 
 type Props = {
   option: echarts.EChartsOption;
-  height?: number;
+  height?: number | string;
   onEvents?: Record<string, (params: unknown) => void>;
   className?: string;
 };
 
-export default function EChart({ option, height = 300, onEvents, className }: Props) {
+export default function EChart({ option, height = "100%", onEvents, className }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const chart = useRef<echarts.ECharts | null>(null);
 
