@@ -195,13 +195,41 @@ function Kpi({ label, value, sub, accent, color }: { label: string; value?: numb
 }
 
 function Card({ title, hint, children, scroll }: { title: string; hint?: string; children: React.ReactNode; scroll?: boolean }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const header = (big?: boolean) => (
+    <div className="shrink-0 flex items-start justify-between gap-2 mb-1">
+      <div>
+        <h3 className={`${big ? "text-[15px]" : "text-[12px]"} font-semibold leading-tight`}>{title}</h3>
+        {hint && <p className={`${big ? "text-[12px]" : "text-[10px]"} leading-tight`} style={{ color: "var(--muted)" }}>{hint}</p>}
+      </div>
+      <button onClick={() => setOpen(!big)} title={big ? "Close" : "Enlarge"}
+        className="chip px-1.5 py-0.5 text-[12px] leading-none shrink-0" aria-label={big ? "Close" : "Enlarge"}>
+        {big ? "✕" : "⤢"}
+      </button>
+    </div>
+  );
+
   return (
     <div className="card p-3 flex flex-col min-h-0">
-      <div className="mb-1 shrink-0">
-        <h3 className="text-[12px] font-semibold leading-tight">{title}</h3>
-        {hint && <p className="text-[10px] leading-tight" style={{ color: "var(--muted)" }}>{hint}</p>}
-      </div>
+      {header(false)}
       <div className={`flex-1 min-h-0 ${scroll ? "overflow-auto" : ""}`}>{children}</div>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+          style={{ background: "rgba(0,0,0,0.55)" }} onClick={() => setOpen(false)}>
+          <div className="card p-4 flex flex-col" style={{ width: "94vw", height: "90vh" }}
+            onClick={(e) => e.stopPropagation()}>
+            {header(true)}
+            <div className={`flex-1 min-h-0 ${scroll ? "overflow-auto" : ""}`}>{children}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

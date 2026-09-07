@@ -3,6 +3,14 @@ import { Theme, base, axisX, axisY } from "./theme";
 
 const fmtWeek = (w: string) => w.slice(0, 10);
 
+// mouse-wheel + drag zoom (inside) presets
+const ZOOM_X = [{ type: "inside", xAxisIndex: 0, filterMode: "none" }];
+const ZOOM_Y = [{ type: "inside", yAxisIndex: 0, filterMode: "none" }];
+const ZOOM_XY = [
+  { type: "inside", xAxisIndex: 0, filterMode: "none" },
+  { type: "inside", yAxisIndex: 0, filterMode: "none" },
+];
+
 export function volumeLine(
   data: { week: string; orders: number }[], t: Theme, selected: string
 ): any {
@@ -10,6 +18,7 @@ export function volumeLine(
   return {
     ...base(t),
     grid: { left: 8, right: 40, top: 28, bottom: 24, containLabel: true },
+    dataZoom: ZOOM_X,
     tooltip: { ...base(t).tooltip, trigger: "axis" },
     xAxis: { type: "category", data: data.map((d) => fmtWeek(d.week)), ...axisX(t),
       axisLabel: { color: t.muted, fontSize: 10, showMaxLabel: true, interval: Math.ceil(data.length / 8) } },
@@ -33,6 +42,7 @@ export function horizontalBar(
   return {
     ...base(t),
     grid: { left: 8, right: 44, top: 12, bottom: 8, containLabel: true },
+    dataZoom: ZOOM_Y,
     tooltip: { ...base(t).tooltip, trigger: "axis", axisPointer: { type: "shadow" } },
     xAxis: { type: "value", ...axisX(t) },
     yAxis: { type: "category", data: rows.map((d) => d.name), ...axisY(t),
@@ -44,7 +54,6 @@ export function horizontalBar(
   };
 }
 
-// grouped: total orders vs delayed (delayed in accent), same chart (design feedback)
 export function mergedBar(
   data: { name: string; orders: number; late_orders: number }[], t: Theme
 ): any {
@@ -52,6 +61,7 @@ export function mergedBar(
   return {
     ...base(t),
     grid: { left: 8, right: 16, top: 32, bottom: 56, containLabel: true },
+    dataZoom: ZOOM_X,
     legend: { data: ["Orders", "Delayed"], textStyle: { color: t.muted, fontSize: 11 }, top: 0, right: 0 },
     tooltip: { ...base(t).tooltip, trigger: "axis", axisPointer: { type: "shadow" } },
     xAxis: { type: "category", data: rows.map((d) => d.name), ...axisX(t),
@@ -64,7 +74,6 @@ export function mergedBar(
   };
 }
 
-// diverging review change: positive = improved (pos), negative = declined (accent)
 export function divergingBar(
   data: { name: string; review_change: number }[], t: Theme
 ): any {
@@ -72,6 +81,7 @@ export function divergingBar(
   return {
     ...base(t),
     grid: { left: 8, right: 44, top: 12, bottom: 8, containLabel: true },
+    dataZoom: ZOOM_Y,
     tooltip: { ...base(t).tooltip, trigger: "axis", axisPointer: { type: "shadow" } },
     xAxis: { type: "value", ...axisX(t) },
     yAxis: { type: "category", data: rows.map((d) => d.name), ...axisY(t) },
@@ -103,7 +113,7 @@ export function choropleth(
       inRange: { color: t.ramp }, textStyle: { color: t.muted, fontSize: 10 }, itemHeight: 80,
     },
     series: [{
-      type: "map", map: "brazil", roam: false,
+      type: "map", map: "brazil", roam: true,
       nameProperty: "sigla",
       itemStyle: { borderColor: t.border, areaColor: t.grid },
       emphasis: { itemStyle: { areaColor: t.series2 }, label: { show: false } },
@@ -123,6 +133,7 @@ export function scatterSellers(
   return {
     ...base(t),
     grid: { left: 8, right: 16, top: 24, bottom: 40, containLabel: true },
+    dataZoom: ZOOM_XY,
     tooltip: {
       ...base(t).tooltip,
       formatter: (p: any) =>
@@ -151,6 +162,7 @@ export function quadrantScatter(
   return {
     ...base(t),
     grid: { left: 8, right: 16, top: 24, bottom: 40, containLabel: true },
+    dataZoom: ZOOM_XY,
     tooltip: {
       ...base(t).tooltip,
       formatter: (p: any) =>
