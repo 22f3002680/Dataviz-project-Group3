@@ -1,7 +1,7 @@
 # Data Pipeline
 
 Issue #3 owns the reproducible path from raw datasets to `dashboard/data.js`.
-The default source is the committed workbook `Dataviz_proj_all_datasets.xlsx`, so
+The default source is the workbook `Dataviz_proj_all_datasets.xlsx` (downloaded separately, not stored in git), so
 teammates do not need temporary local CSV files to rebuild the dashboard.
 
 ## Run
