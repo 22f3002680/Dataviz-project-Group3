@@ -78,10 +78,15 @@ export async function product(week: string, state: string | null) {
      FROM cur JOIN prev USING (category) JOIN tracked_categories t ON t.category = cur.category
      WHERE cur.r IS NOT NULL AND prev.r IS NOT NULL ORDER BY review_change`, p);
   const quadrant = await q(
-    `SELECT INITCAP(REPLACE(category,'_',' ')) AS name, ROUND(revenue)::int AS revenue,
-            ROUND(avg_review,2)::float AS avg_review, orders::int AS orders,
-            ROUND(low_review_rate,1)::float AS low_review_rate
-     FROM category_stats WHERE items >= 500 ORDER BY revenue DESC`);
+    `SELECT INITCAP(REPLACE(i.category,'_',' ')) AS name,
+            ROUND(SUM(i.price))::int AS revenue,
+            ROUND(AVG(i.review_score),2)::float AS avg_review,
+            COUNT(DISTINCT i.order_id)::int AS orders,
+            ROUND(100.0*AVG(CASE WHEN i.low_review THEN 1 ELSE 0 END),1)::float AS low_review_rate
+     FROM item_base i JOIN tracked_categories t ON t.category = i.category
+     WHERE i.purchase_week = $1 AND ($2::text IS NULL OR i.customer_state = $2)
+     GROUP BY i.category HAVING AVG(i.review_score) IS NOT NULL
+     ORDER BY revenue DESC`, p);
   const intervention = await q(
     `SELECT INITCAP(REPLACE(category,'_',' ')) AS name, avg_review::float, late_orders::int, orders::int
      FROM weekly_category WHERE purchase_week = $1 AND (avg_review < 4 OR late_orders > 0)

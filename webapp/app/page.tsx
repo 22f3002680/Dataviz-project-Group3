@@ -245,7 +245,12 @@ function MiniTable({ head, rows }: { head: string[]; rows: (string | number | bo
       <tbody>
         {rows.map((r, i) => (
           <tr key={i} className="border-t" style={{ borderColor: "var(--border)" }}>
-            {r.map((c, j) => <td key={j} className="py-1 pr-1.5 whitespace-nowrap">{c ?? "—"}</td>)}
+            {r.map((c, j) => (
+              <td key={j} className="py-1 pr-1.5 whitespace-nowrap"
+                style={c === "▲" ? { color: "var(--pos)" } : c === "▼" ? { color: "var(--accent)" } : undefined}>
+                {c ?? "—"}
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>
