@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+dist/
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Metabase generated data + fetched Drive files
+metabase/data/
+drive_files/
+
+# Large dataset workbook (download separately; not stored in git)
+Dataviz_proj_all_datasets.xlsx
