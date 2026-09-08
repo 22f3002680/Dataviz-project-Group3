@@ -33,6 +33,10 @@ docker cp metabase/marts.sql dvd-postgres:/marts.sql
 docker exec dvd-postgres psql -U olist -d olist -f /marts.sql
 docker cp metabase/geo_marts.sql dvd-postgres:/geo_marts.sql
 docker exec dvd-postgres psql -U olist -d olist -f /geo_marts.sql
+# Performance: convert the heavy views to materialized views + tables
+# (required for a responsive webapp; avoids the seller-tab recompute hang)
+docker cp metabase/materialize.sql dvd-postgres:/materialize.sql
+docker exec dvd-postgres psql -U olist -d olist -f /materialize.sql
 
 # 3. Wait ~1-2 min for Metabase to boot, then register the map + build the dashboard
 python3 metabase/register_map.py   # register the Brazil-states choropleth GeoJSON

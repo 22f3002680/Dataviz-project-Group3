@@ -1,6 +1,6 @@
 # Marketing Funnel and Seller Acquisition Analysis
 
-This Issue #10 report is generated from the committed workbook by
+This Issue #10 report is generated from the source workbook by
 `scripts/build_marketing_funnel_analysis.py`. It replaces the Colab-only workflow
 with a deterministic repository-owned analysis.
 

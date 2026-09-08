@@ -13,7 +13,7 @@ Source materials:
 
 ## Dataset Inventory
 
-The dashboard pipeline currently consumes the committed workbook
+The dashboard pipeline currently consumes the source workbook
 `Dataviz_proj_all_datasets.xlsx`. Row counts below are from
 `dashboard/data.js` metadata after the reproducible pipeline build.
 

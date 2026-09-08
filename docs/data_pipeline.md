@@ -110,7 +110,7 @@ python3 scripts/validate_marketing_funnel_analysis.py
 ```
 
 The builder reads marketing leads, closed deals, orders, order items, and reviews
-from the same committed workbook. It joins MQLs to closed deals by `mql_id`, then
+from the same source workbook. It joins MQLs to closed deals by `mql_id`, then
 joins closed sellers to seller-order rows by `seller_id`. Seller outcomes use a
 fixed 30-day period after `won_date`; only sellers with the full period before
 the final item-backed purchase timestamp are eligible.
