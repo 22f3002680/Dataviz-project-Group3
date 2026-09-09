@@ -1,0 +1,7 @@
+# Python dependencies for the data pipeline (scripts/) and notebooks.
+# Install with:  pip install -r requirements.txt
+pandas>=2.1
+numpy>=1.24
+openpyxl>=3.1      # read the .xlsx dataset workbook
+matplotlib>=3.7    # EDA / analysis charts
+seaborn>=0.12      # notebook charts
