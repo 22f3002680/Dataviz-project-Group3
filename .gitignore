@@ -10,5 +10,3 @@ __pycache__/
 metabase/data/
 drive_files/
 
-# Large dataset workbook (download separately; not stored in git)
-Dataviz_proj_all_datasets.xlsx

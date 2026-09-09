@@ -13,14 +13,13 @@ click-to-filter state map, and live charts.
 ## Get started (from scratch)
 
 **You need:** Docker, Node.js 18+, and Python 3 (with `pandas` and `openpyxl`).
-Also download the dataset workbook `Dataviz_proj_all_datasets.xlsx` and put it in
-the project root (it is not stored in git).
+The dataset workbook (`Dataviz_proj_all_datasets.xlsx`) is included in the repo,
+so cloning is all you need.
 
 ```bash
 # 1. Clone
 git clone https://github.com/22f3002680/Dataviz-project-Group3.git
 cd Dataviz-project-Group3
-# (place Dataviz_proj_all_datasets.xlsx here)
 
 # 2. Build the data and start the database (PostgreSQL in Docker)
 python3 scripts/build_metabase_tables.py     # cleaned order/item tables
