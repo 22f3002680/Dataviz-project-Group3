@@ -4,6 +4,14 @@ import { q } from "./db";
 const S = "($2::text IS NULL OR customer_state = $2)";
 const SS = "($2::text IS NULL OR seller_state = $2)";
 
+// linear-interpolated percentile (0..1)
+function pct(arr: number[], p: number): number {
+  const s = arr.filter((x) => x != null).sort((a, b) => a - b);
+  if (!s.length) return 0;
+  const i = (s.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+  return lo === hi ? s[lo] : s[lo] + (s[hi] - s[lo]) * (i - lo);
+}
+
 export async function meta() {
   const weeks = await q<{ week: string; orders: number }>(
     `SELECT purchase_week::text AS week, orders FROM weekly_overview
@@ -77,20 +85,24 @@ export async function product(week: string, state: string | null) {
             ROUND((cur.r - prev.r)::numeric,2)::float AS review_change
      FROM cur JOIN prev USING (category) JOIN tracked_categories t ON t.category = cur.category
      WHERE cur.r IS NOT NULL AND prev.r IS NOT NULL ORDER BY review_change`, p);
+  // PPT criteria (cumulative up to the selected week): categories with >= 11
+  // reviewed orders; classification (median revenue x median volume x weak
+  // reviews) is done in the chart builder.
   const quadrant = await q(
-    `SELECT INITCAP(REPLACE(i.category,'_',' ')) AS name,
-            ROUND(SUM(i.price))::int AS revenue,
-            ROUND(AVG(i.review_score),2)::float AS avg_review,
-            COUNT(DISTINCT i.order_id)::int AS orders,
-            ROUND(100.0*AVG(CASE WHEN i.low_review THEN 1 ELSE 0 END),1)::float AS low_review_rate
-     FROM item_base i JOIN tracked_categories t ON t.category = i.category
-     WHERE i.purchase_week = $1 AND ($2::text IS NULL OR i.customer_state = $2)
-     GROUP BY i.category HAVING AVG(i.review_score) IS NOT NULL
+    `SELECT INITCAP(REPLACE(category,'_',' ')) AS name,
+            ROUND(SUM(price))::int AS revenue,
+            ROUND(AVG(review_score),2)::float AS avg_review,
+            COUNT(DISTINCT order_id)::int AS orders,
+            ROUND(100.0*AVG(CASE WHEN low_review THEN 1 ELSE 0 END),1)::float AS low_review_rate
+     FROM item_base
+     WHERE purchase_week <= $1 AND category IS NOT NULL AND ${S}
+     GROUP BY category
+     HAVING COUNT(*) FILTER (WHERE review_score IS NOT NULL) >= 11
      ORDER BY revenue DESC`, p);
   const intervention = await q(
     `SELECT INITCAP(REPLACE(category,'_',' ')) AS name, avg_review::float, late_orders::int, orders::int
      FROM weekly_category WHERE purchase_week = $1 AND (avg_review < 4 OR late_orders > 0)
-     ORDER BY avg_review ASC NULLS LAST, late_orders DESC`, [week]);
+     ORDER BY avg_review ASC NULLS LAST, late_orders DESC LIMIT 10`, [week]);
   return { merged, reviewChange, quadrant, intervention };
 }
 
@@ -110,12 +122,28 @@ export async function seller(week: string, state: string | null) {
      SELECT LEFT(cur.seller_id,8) AS name, ROUND((cur.r - prev.r)::numeric,2)::float AS review_change
      FROM cur JOIN prev USING (seller_id) JOIN intervention_sellers s ON s.seller_id = cur.seller_id
      WHERE cur.r IS NOT NULL AND prev.r IS NOT NULL ORDER BY review_change`, p);
-  const scatter = await q(
-    `SELECT LEFT(seller_id,8) AS name, ROUND(revenue)::int AS revenue,
-            ROUND(avg_review,2)::float AS avg_review, orders::int AS orders,
-            ROUND(late_rate,1)::float AS late_rate,
-            EXISTS (SELECT 1 FROM intervention_sellers i WHERE i.seller_id = seller_stats.seller_id) AS flagged
-     FROM seller_stats WHERE orders >= 20 AND ($1::text IS NULL OR seller_state = $1)`, [state]);
+  // PPT criteria (cumulative up to the selected week): priority sellers =
+  // revenue > 75th pct, >= 20 delivered orders, late rate > 75th pct,
+  // low-review rate > 75th pct. Thresholds recomputed on the cumulative window.
+  const srows = await q<{ name: string; revenue: number; delivered: number; late_rate: number | null; low_review_rate: number | null; avg_review: number }>(
+    `SELECT LEFT(seller_id,8) AS name,
+            SUM(price)::float AS revenue,
+            COUNT(DISTINCT order_id) FILTER (WHERE is_delivered)::int AS delivered,
+            100.0*AVG(CASE WHEN is_delivered THEN (CASE WHEN is_late THEN 1 ELSE 0 END) END)::float AS late_rate,
+            100.0*AVG(CASE WHEN review_score IS NOT NULL THEN (CASE WHEN low_review THEN 1 ELSE 0 END) END)::float AS low_review_rate,
+            AVG(review_score)::float AS avg_review
+     FROM item_base WHERE purchase_week <= $1 AND ${SS}
+     GROUP BY seller_id HAVING AVG(review_score) IS NOT NULL`, p);
+  // percentiles over all sellers (matches the PPT's 75th-pct thresholds)
+  const revP75 = pct(srows.map((s) => s.revenue), 0.75);
+  const lateP75 = pct(srows.map((s) => s.late_rate).filter((x): x is number => x != null), 0.75);
+  const lowP75 = pct(srows.map((s) => s.low_review_rate).filter((x): x is number => x != null), 0.75);
+  const points = srows.map((s) => ({
+    name: s.name, revenue: Math.round(s.revenue),
+    avg_review: Math.round(s.avg_review * 100) / 100, orders: s.delivered,
+    flagged: s.delivered >= 20 && s.revenue > revP75 && (s.late_rate ?? 0) > lateP75 && (s.low_review_rate ?? 0) > lowP75,
+  }));
+  const scatter = { points, revP75: Math.round(revP75), reviewThr: 3.8 };
   const watchlist = await q(
     `SELECT LEFT(ws.seller_id,8) AS seller, ws.seller_state AS state,
             ws.avg_review::float, ws.late_orders::int, ws.orders::int,
