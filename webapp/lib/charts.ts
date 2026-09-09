@@ -123,90 +123,101 @@ export function choropleth(
   };
 }
 
+// PPT "Seller Performance: Revenue vs Customer Satisfaction" — priority sellers
+// (high revenue, weak experience) flagged; dashed 75th-pct revenue + review lines.
 export function scatterSellers(
-  data: { name: string; revenue: number; avg_review: number; orders: number; flagged: boolean }[], t: Theme
+  data: { points: { name: string; revenue: number; avg_review: number; orders: number; flagged: boolean }[]; revP75: number; reviewThr: number }, t: Theme
 ): any {
-  const pts = data.map((d) => ({
-    value: [Math.max(d.revenue, 1), d.avg_review, d.orders, d.name],
-    itemStyle: { color: d.flagged ? t.accent : t.muted, opacity: d.flagged ? 0.9 : 0.35 },
-  }));
+  const mk = (flagged: boolean) =>
+    data.points.filter((d) => d.flagged === flagged)
+      .map((d) => ({ value: [Math.max(d.revenue, 1), d.avg_review, d.orders, d.name] }));
   return {
     ...base(t),
-    grid: { left: 8, right: 16, top: 24, bottom: 40, containLabel: true },
+    grid: { left: 8, right: 16, top: 30, bottom: 40, containLabel: true },
     dataZoom: ZOOM_XY,
+    legend: { data: ["Priority sellers", "Other sellers"], textStyle: { color: t.muted, fontSize: 10 }, top: 0, right: 0 },
     tooltip: {
       ...base(t).tooltip,
       formatter: (p: any) =>
-        `<b>${p.value[3]}</b><br/>Revenue: R$${p.value[0].toLocaleString()}<br/>Review: ${p.value[1]}<br/>Orders: ${p.value[2]}`,
+        `<b>${p.value[3]}</b><br/>Revenue: R$${p.value[0].toLocaleString()}<br/>Review: ${p.value[1]}<br/>Delivered: ${p.value[2]}`,
     },
-    xAxis: { type: "log", name: "Revenue (log)", nameLocation: "middle", nameGap: 26, ...axisX(t), nameTextStyle: { color: t.muted } },
+    xAxis: { type: "log", name: "Seller revenue (log)", nameLocation: "middle", nameGap: 26, ...axisX(t), nameTextStyle: { color: t.muted } },
     yAxis: { type: "value", name: "Avg review", min: 1, max: 5, ...axisY(t), nameTextStyle: { color: t.muted } },
-    series: [{
-      type: "scatter", data: pts,
-      symbolSize: (v: number[]) => Math.min(26, 5 + Math.sqrt(v[2])),
-      markLine: { silent: true, symbol: "none", lineStyle: { color: t.border, type: "dashed" }, data: [{ yAxis: 3.8 }] },
-    }],
+    series: [
+      {
+        name: "Other sellers", type: "scatter", data: mk(false),
+        symbolSize: (v: number[]) => Math.min(22, 4 + Math.sqrt(v[2])),
+        itemStyle: { color: t.muted, opacity: 0.3 },
+        markLine: {
+          silent: true, symbol: "none",
+          lineStyle: { color: t.muted, type: "dashed", opacity: 0.7 }, label: { color: t.muted, fontSize: 9 },
+          data: [
+            { xAxis: Math.max(1, data.revP75), label: { formatter: "revenue 75th pct" } },
+            { yAxis: data.reviewThr, label: { formatter: "review " + data.reviewThr } },
+          ],
+        },
+      },
+      {
+        name: "Priority sellers", type: "scatter", data: mk(true),
+        symbolSize: (v: number[]) => Math.min(24, 6 + Math.sqrt(v[2])),
+        itemStyle: { color: t.series2, opacity: 0.9 },
+      },
+    ],
   };
 }
 
+// PPT "Product Category Risk Quadrants": High risk = (high revenue OR high
+// volume) AND weak reviews (avg < 4 OR poor-review > 10%). Four coloured groups.
 export function quadrantScatter(
   data: { name: string; revenue: number; avg_review: number; orders: number; low_review_rate: number }[], t: Theme
 ): any {
-  const REVIEW_THR = 4;
-  const revs = data.map((d) => d.revenue).sort((a, b) => a - b);
-  const n = revs.length;
-  const medRev = n === 0 ? 0 : n % 2 ? revs[(n - 1) / 2] : (revs[n / 2 - 1] + revs[n / 2]) / 2;
+  const med = (arr: number[]) => {
+    const s = [...arr].sort((a, b) => a - b), n = s.length;
+    return n === 0 ? 0 : n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  };
+  const medRev = med(data.map((d) => d.revenue));
+  const medVol = med(data.map((d) => d.orders));
+
+  const groups: Record<string, { color: string; pts: any[] }> = {
+    "High revenue / High risk": { color: t.accent, pts: [] },
+    "High revenue / Low risk": { color: t.pos, pts: [] },
+    "Low revenue / High risk": { color: t.series2, pts: [] },
+    "Low revenue / Low risk": { color: t.cat[4], pts: [] },
+  };
+  for (const d of data) {
+    const hiRev = d.revenue >= medRev, hiVol = d.orders >= medVol;
+    const weak = d.avg_review < 4 || d.low_review_rate > 10;
+    const highRisk = (hiRev || hiVol) && weak;
+    const key = hiRev
+      ? (highRisk ? "High revenue / High risk" : "High revenue / Low risk")
+      : (highRisk ? "Low revenue / High risk" : "Low revenue / Low risk");
+    groups[key].pts.push({ value: [d.revenue, d.avg_review, d.orders, d.name, d.low_review_rate] });
+  }
   const maxRev = Math.max(1, ...data.map((d) => d.revenue)) * 1.08;
-  const minRev = 0;
-  const reviews = data.map((d) => d.avg_review);
-  const yMin = Math.max(0, Math.floor((Math.min(REVIEW_THR, ...reviews) - 0.3) * 2) / 2);
-  const yMax = 5;
-
-  // colour each point by which quadrant it sits in this week
-  const pts = data.map((d) => {
-    const hiRev = d.revenue >= medRev, strong = d.avg_review >= REVIEW_THR;
-    const color = strong ? (hiRev ? t.pos : t.cat[6]) : (hiRev ? t.accent : t.series2);
-    return { value: [d.revenue, d.avg_review, d.orders, d.name], itemStyle: { color, opacity: 0.85 } };
-  });
-
-  const label = (text: string, pos: string, col: string) =>
-    ({ show: true, position: pos, color: col, fontSize: 9, fontWeight: 600 as const, formatter: text });
 
   return {
     ...base(t),
-    grid: { left: 8, right: 16, top: 24, bottom: 40, containLabel: true },
+    grid: { left: 8, right: 16, top: 30, bottom: 40, containLabel: true },
     dataZoom: ZOOM_XY,
+    legend: { data: Object.keys(groups), textStyle: { color: t.muted, fontSize: 9 }, top: 0, type: "scroll", width: "94%" },
     tooltip: {
       ...base(t).tooltip,
       formatter: (p: any) =>
-        `<b>${p.value[3]}</b><br/>Revenue: R$${p.value[0].toLocaleString()}<br/>Review: ${p.value[1]}<br/>Orders: ${p.value[2]}`,
+        `<b>${p.value[3]}</b><br/>Revenue: R$${p.value[0].toLocaleString()}<br/>Review: ${p.value[1]}<br/>Orders: ${p.value[2]}<br/>Poor-review: ${p.value[4]}%`,
     },
-    xAxis: { type: "value", name: "Revenue (this week)", nameLocation: "middle", nameGap: 26, min: minRev, max: maxRev, ...axisX(t), nameTextStyle: { color: t.muted } },
-    yAxis: { type: "value", name: "Avg review", min: yMin, max: yMax, ...axisY(t), nameTextStyle: { color: t.muted } },
-    series: [{
-      type: "scatter",
-      data: pts,
-      symbolSize: (v: number[]) => Math.min(40, 8 + Math.sqrt(v[2]) * 1.5),
-      // four-quadrant split: median revenue (vertical) x review 4.0 (horizontal)
-      markLine: {
+    xAxis: { type: "value", name: "Revenue (cumulative)", nameLocation: "middle", nameGap: 26, min: 0, max: maxRev, ...axisX(t), nameTextStyle: { color: t.muted } },
+    yAxis: { type: "value", name: "Avg review", min: 1, max: 5, ...axisY(t), nameTextStyle: { color: t.muted } },
+    series: Object.entries(groups).map(([name, g], i) => ({
+      name, type: "scatter", data: g.pts, itemStyle: { color: g.color, opacity: 0.8 },
+      symbolSize: (v: number[]) => Math.min(38, 8 + Math.sqrt(v[2]) * 1.4),
+      markLine: i === 0 ? {
         silent: true, symbol: "none",
-        lineStyle: { color: t.muted, type: "dashed", opacity: 0.7 },
-        label: { color: t.muted, fontSize: 9 },
+        lineStyle: { color: t.muted, type: "dashed", opacity: 0.6 }, label: { color: t.muted, fontSize: 9 },
         data: [
           { xAxis: medRev, label: { formatter: "median revenue" } },
-          { yAxis: REVIEW_THR, label: { formatter: "review 4.0" } },
+          { yAxis: 4, label: { formatter: "review 4.0" } },
         ],
-      },
-      markArea: {
-        silent: true,
-        itemStyle: { opacity: 0.06 },
-        data: [
-          [{ coord: [medRev, REVIEW_THR], itemStyle: { color: t.pos }, label: label("High revenue · Strong reviews", "insideTopRight", t.pos) }, { coord: [maxRev, yMax] }],
-          [{ coord: [medRev, yMin], itemStyle: { color: t.accent }, label: label("High revenue · Weak reviews (priority)", "insideBottomRight", t.accent) }, { coord: [maxRev, REVIEW_THR] }],
-          [{ coord: [minRev, REVIEW_THR], itemStyle: { color: t.cat[6] }, label: label("Low revenue · Strong reviews", "insideTopLeft", t.muted) }, { coord: [medRev, yMax] }],
-          [{ coord: [minRev, yMin], itemStyle: { color: t.series2 }, label: label("Low revenue · Weak reviews", "insideBottomLeft", t.muted) }, { coord: [medRev, REVIEW_THR] }],
-        ],
-      },
-    }],
+      } : undefined,
+    })),
   };
 }
