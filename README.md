@@ -87,9 +87,4 @@ python3 scripts/validate_marketing_funnel_analysis.py
 
 Live reports: https://22f3002680.github.io/Dataviz-project-Group3/reports/index.html
 
-## Final deliverables
 
-- [Final technical report (Google Docs)](https://docs.google.com/document/d/10zrbGT52cCArMm5L8SqdSxQ9qCn2YxASzopuL5tOMks/edit)
-- [Final presentation (Google Slides)](https://docs.google.com/presentation/d/10aYpiZmsREwXdvXY38dQX9lBCxzdiKlOF7JN3HLp0xU/edit)
-- [Interactive dashboard](https://22f3002680.github.io/Dataviz-project-Group3/)
-- [Supporting analysis reports](https://22f3002680.github.io/Dataviz-project-Group3/reports/index.html)
