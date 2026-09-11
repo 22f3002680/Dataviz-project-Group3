@@ -2,11 +2,11 @@
 
 An interactive dashboard for a Brazilian e-commerce marketplace, built with
 **Next.js + Tailwind + Apache ECharts** on top of a **PostgreSQL** database.
-It has three sections - **Overview, Product, Seller** — with a week slider, a
+It has three sections - **Overview, Product, Seller** - with a week slider, a
 click-to-filter state map, and live charts.
 
 **Live demo:** https://pubmed-dui-necessity-barnes.trycloudflare.com
-*(temporary Cloudflare link — it changes when the app is relaunched)*
+*(temporary Cloudflare link - it changes when the app is relaunched)*
 
 ---
 
